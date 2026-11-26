@@ -1,0 +1,157 @@
+name: FTPlayerDemo
+options:
+  deploymentTarget:
+    iOS: "13.0"
+projectReferences:
+  FTPlayerSDK:
+    path: ../SDK/FTPlayer.xcodeproj
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "13.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    ARCHS: arm64
+    CODE_SIGN_STYLE: Automatic
+targets:
+  FTPlayerDemo:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ftplayer.demo
+        INFOPLIST_FILE: Info.plist
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+    dependencies:
+      - target: FTPlayerSDK/FTPlayer
+        embed: true
+  FTPlayerPlaybackTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/FTPlayerDemoTests.swift
+      - path: Tests/Playback
+        excludes: [Resources, README.md]
+      - path: Tests/Playback/Resources/SampleStreams.json
+        buildPhase: resources
+      - path: Tests/Playback/Resources/MediaFixtureCatalog.json
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ftplayer.demo.playbacktests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: FTPlayerDemo
+      - target: FTPlayerSDK/FTPlayer
+  FTPlayerDemoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/UITests
+      - path: Tests/Playback/Resources/SampleStreams.json
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ftplayer.demo.uitests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: FTPlayerDemo
+schemes:
+  FTPlayerDemo:
+    build:
+      targets:
+        FTPlayerSDK/FTPlayer: all
+        FTPlayerDemo: all
+    run:
+      config: Debug
+      executable: FTPlayerDemo
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - FTPlayerDemoUITests
+  FTPlayerDemoUI:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - FTPlayerDemoUITests
+  FTPlayerPlayback:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - FTPlayerPlaybackTests
+  FTPlayerRegression:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - target:
+            project: FTPlayerSDK/FTPlayerTests
+        - name: FTPlayerPlaybackTests
+          skippedTests:
+            - FTPlayerInternetTests
+            - FTPlayerInternetControlTests
+            - FTPlayerDecodeBackendTests
+            - FTPlayerDecodeBackendInternetTests
+  FTPlayerInternet:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - name: FTPlayerPlaybackTests
+          selectedTests:
+            - FTPlayerInternetTests
+            - FTPlayerInternetControlTests
+  FTPlayerDecodeBackends:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - name: FTPlayerPlaybackTests
+          selectedTests:
+            - FTPlayerDecodeBackendTests
+  FTPlayerDecodeBackendsInternet:
+    build:
+      targets:
+        FTPlayerDemo: all
+    test:
+      config: Debug
+      macroExpansion: FTPlayerDemo
+      environmentVariables:
+        FTPLAYER_TEST_MEDIA_MANIFEST: "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
+      targets:
+        - name: FTPlayerPlaybackTests
+          selectedTests:
+            - FTPlayerDecodeBackendInternetTests

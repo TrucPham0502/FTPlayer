@@ -1,0 +1,75 @@
+{
+  "sourceRelease": "n9.0.2-34-g9cda9b3286",
+  "sourceOriginalSHA256": "794d5a60a7ebd157bf05d8f1f2afe8cecb7d16ce464cc0ddae7741ae8602160b",
+  "sourcePatchedSHA256": "e51da1bb4b647090e21125fce5509d27c87f728c570d7cbb6b4290a4a7fdb4e5",
+  "binaries": {
+    "ios-arm64": {
+      "before": "65f0b76376bade58b847034440b906d2a4a9d99633a74f30941dd96d214f5863",
+      "after": "6508df4d4f8bb9d1bb01fac91451f28ccbb29f01fe120bf99657c37ca8beda01",
+      "httpsAfter": "671f3695db46c0a10aa0968f69114c80d5ce6cd637f1db11f5ff9843e10a5bf1"
+    },
+    "ios-arm64-simulator": {
+      "before": "8e84baf038ad6652815b7129578db85df9228c1678ea4b529dabfa0d2281b488",
+      "after": "287c56a8ec499f30691fd227392738d0b286727dc387c39a3c38669b8e43c44c",
+      "httpsAfter": "69deb3cb4e14a5c0ea7baad06726b9fb6a1b301c34b5a71f540f19b34c3780cd"
+    },
+    "macos-arm64_x86_64": {
+      "before": "822a218f346ab14bb5698e484babce7a28d1dc8c272376eb5a1dabdfa097a914",
+      "after": "a99df3082259b03ed8028c2edbd72c9cac3bfc06812ea45f4aa1c56808a86e3c",
+      "httpsAfter": "5aa64d2bde5d89a3d1a8dcf7378eb7cc95e6c8002cd637108ef844fe0621fc81"
+    }
+  },
+  "nativeHTTPS": {
+    "backend": "Apple Secure Transport",
+    "flags": [
+      "--enable-securetransport",
+      "--enable-protocol=https,tls"
+    ],
+    "rebuildScript": "SDK/Scripts/FFmpeg/rebuild-https-support.py"
+  },
+  "hlsObjectRebuild": {
+    "sourceSHA256": "e51da1bb4b647090e21125fce5509d27c87f728c570d7cbb6b4290a4a7fdb4e5",
+    "binaries": {
+      "ios-arm64": {
+        "before": "c461a83116edacc94fcfaad2d02ab9182acdcc332b98e09d3acac4d816c8aab3",
+        "after": "6c885d9639a6a1605c967f8f931db09d47ff66647e6a10044f4e43fd864b21f6"
+      },
+      "ios-arm64-simulator": {
+        "before": "588cf4da5034a68fa08fded1d2e500f0d6c58851deb49642f1befe158095f259",
+        "after": "46b4c02a55da940b26495e4968696a5ea39d7e54251b7b7a95861b176473e337"
+      },
+      "macos-arm64_x86_64": {
+        "before": "074fbd392983ce05bfb157abc64d68df35da9aaccad2227a0fa033f61579bea3",
+        "after": "0113033498e820c16fdad2c4bbc4f2230eb4c6613b6e1b193ba69a683659b0d6"
+      }
+    }
+  },
+  "fullLibraryBuild": {
+    "sourcePatchedSHA256": "e51da1bb4b647090e21125fce5509d27c87f728c570d7cbb6b4290a4a7fdb4e5",
+    "buildScript": "SDK/Scripts/FFmpeg/ffmpeg-build-libs.sh",
+    "buildScriptSHA256": "f0c5ade3c7624bae3d11a8fe8e2d25d72611d81e482eabc2f0f45357e9cdd824",
+    "binaries": {
+      "libavcodec.xcframework/ios-arm64/libavcodec.framework/libavcodec": "2ad7e06e3ba6f6290b39dc5cc6e13910d590b8416f0102f841ef8f74348ee3f8",
+      "libavcodec.xcframework/ios-arm64-simulator/libavcodec.framework/libavcodec": "0af963dca261ea7ad35cf836aed409d3d7dbc13c6ac80da883a19e9b0e4623cf",
+      "libavcodec.xcframework/macos-arm64_x86_64/libavcodec.framework/libavcodec": "1f375bf73dabe3adcf167815c67d1944e6ffa5b6c9f1272884633888b9643a23",
+      "libavdevice.xcframework/ios-arm64/libavdevice.framework/libavdevice": "c567cb00f781e8695eba3649cef3fa25fdbb44651b20719a122c38eda2679d87",
+      "libavdevice.xcframework/ios-arm64-simulator/libavdevice.framework/libavdevice": "64527224f50134eddfcee5d97ea6badc7ee784b223ee9dea19a45afd36b4efda",
+      "libavdevice.xcframework/macos-arm64_x86_64/libavdevice.framework/libavdevice": "11f463482c01f792d9d952eeee860f0645f18d585bba0671aeb395c89434b599",
+      "libavfilter.xcframework/ios-arm64/libavfilter.framework/libavfilter": "39ddd33d13ddea0048241ea3e15b283c36f86a1846e3a6daa3edcc09ef551424",
+      "libavfilter.xcframework/ios-arm64-simulator/libavfilter.framework/libavfilter": "4a3d562fa7f5a5a38e6c55d3c8f6be326a0f303ce9d73ce09b8a1552f514875b",
+      "libavfilter.xcframework/macos-arm64_x86_64/libavfilter.framework/libavfilter": "13c2d67befc32837fe87700270d3caac80773ace711530f9ab0e21d2515b8932",
+      "libavformat.xcframework/ios-arm64/libavformat.framework/libavformat": "cfac1411529ed70d5f2412629380a594bc49ae2704cb25b5c993778847ffd201",
+      "libavformat.xcframework/ios-arm64-simulator/libavformat.framework/libavformat": "cc210083cdfd9d46c1b41b619f540aed0e02443dca3761f8a9e19147c58008a3",
+      "libavformat.xcframework/macos-arm64_x86_64/libavformat.framework/libavformat": "5d4665682ecec944db7fe1c9ae1cdf50167059d3fbd4250b97f4853a5cac34c6",
+      "libavutil.xcframework/ios-arm64/libavutil.framework/libavutil": "b3024fd39b23f4c79710cb889b2e093495412968b00299fc4a244d70785dcac7",
+      "libavutil.xcframework/ios-arm64-simulator/libavutil.framework/libavutil": "fcae2c188c9ce51d39442d5ec3a86bc99c9aa8aa0c64ae1046c3c83389af23d0",
+      "libavutil.xcframework/macos-arm64_x86_64/libavutil.framework/libavutil": "761ad04ec64445722f4c873fe5318a08dfa527d24051a7a1dc4ec1c49b7b22e1",
+      "libswresample.xcframework/ios-arm64/libswresample.framework/libswresample": "31458718afeb5beccfa308fbcab10cedfe4b8b4543cdc411a01389611f9a1bad",
+      "libswresample.xcframework/ios-arm64-simulator/libswresample.framework/libswresample": "05098baf5ed5272d36a3f47f9dc93c5adaaabbb94523381dd5c379506aa9afab",
+      "libswresample.xcframework/macos-arm64_x86_64/libswresample.framework/libswresample": "5e1cafac5163782edbf00f11a00555d40585a35d829ab1ec48a44ce84cb2aee8",
+      "libswscale.xcframework/ios-arm64/libswscale.framework/libswscale": "48d5bc507c2537a986d727057a8d786af8d540f628658ee559e7391c35b31f53",
+      "libswscale.xcframework/ios-arm64-simulator/libswscale.framework/libswscale": "5fcdad244a27b2b77c2df70bbdd63aea191734f18c7f46a51a23840a1c6ddff3",
+      "libswscale.xcframework/macos-arm64_x86_64/libswscale.framework/libswscale": "d8159cfead3ffe58e32c42e1becbe24afa53f3dd55c7891171e4b761475bcb0f"
+    }
+  }
+}

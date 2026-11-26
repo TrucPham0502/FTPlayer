@@ -1,0 +1,30 @@
+# Keep source diffs readable without rewriting checked-out files.
+*.swift text
+*.h text
+*.c text
+*.metal text
+*.md text
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text
+*.json text
+*.pbxproj text
+*.xcscheme text
+
+# All vendored FFmpeg files (binaries, headers, metadata) are stored in Git LFS.
+SDK/Vendor/FFmpeg/** filter=lfs diff=lfs merge=lfs -text
+
+# Media fixtures and golden raw frames must not be treated as text.
+*.mp4 binary
+*.mov binary
+*.m4a binary
+*.mkv binary
+*.webm binary
+*.flv binary
+*.ts binary
+*.m4s binary
+*.h264 binary
+*.h265 binary
+*.mjpeg binary
+*.yuv binary
+*.bin binary

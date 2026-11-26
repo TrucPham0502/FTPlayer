@@ -1,0 +1,1241 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		019334CCCB7B364828D137DD /* FTPlaybackCacheSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F311A8BFAABADF63A00A490 /* FTPlaybackCacheSession.swift */; };
+		01D13C05279A6F9917DC6761 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9102CA05E5736C5CF3CF870 /* CoreVideo.framework */; };
+		0297CE6BDE690987F3704DA0 /* FTMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6A52D93531A763AAF3C18A /* FTMetadata.swift */; };
+		07A217B0B745C2C62CFE0AFD /* FTPlayerDiagnostic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A37B15939968C1BB7D15C7 /* FTPlayerDiagnostic.swift */; };
+		0BC7BADD0DD921A564812F54 /* libavfilter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01181812E463EEFEF9A5B153 /* libavfilter.xcframework */; };
+		0CEA3C4BA68970B635ABD380 /* FTPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F950842D1E8553D018C52A0 /* FTPlayerDelegate.swift */; };
+		0F1FEFC3AD4844140E914448 /* FTCVYUVVideoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F1A1C708A9D56AB2FF46A1 /* FTCVYUVVideoFrame.swift */; };
+		0FBED189C764A8E4837A9F0A /* FTArtworkFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF797147FD57EFD29AA74CD8 /* FTArtworkFrame.swift */; };
+		1315CFBA816FAAF9E56FF499 /* PlaybackEventGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A98ED930E96BCF53CE055C /* PlaybackEventGate.swift */; };
+		1480E8330E510429810F8960 /* FTTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9799E90DACF47E15E525D22 /* FTTrack.swift */; };
+		15F4F9E2079FB911BC6DAA76 /* FTPlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2540425B0B2E9684FF60927 /* FTPlayerState.swift */; };
+		163364E8D2DE54D9E7CDB005 /* FTH264VideoToolBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B71E7C9C616CCE481074B8 /* FTH264VideoToolBox.swift */; };
+		1796F49B2BCD03FFCB15C136 /* CacheWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB00AFB7DF4335015CB4015 /* CacheWorker.swift */; };
+		1B0B8729061DD62F7B8A1A8E /* FTAudioFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EACA6C83A017AE7C9472D033 /* FTAudioFrame.swift */; };
+		1E2A90AEFBAB9529D55EE1CD /* FTPlayerSDKConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B542E65EFCB25C0CE91439 /* FTPlayerSDKConfiguration.swift */; };
+		22A357ED964DDE64B5EB42CB /* PlaybackComponentFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EC0795E52034DE2865CB27 /* PlaybackComponentFactory.swift */; };
+		23C52ADAABFD9516A0FB4AE4 /* FTPlayerVideoOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2525737A477721CED723853F /* FTPlayerVideoOutput.swift */; };
+		242E95520C1B1302D1EC0B6C /* PlaybackCacheSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F1BC7938009BDA2DC968ED /* PlaybackCacheSession.swift */; };
+		2B530FD3E80DE66826F20A85 /* FTPlayerCachedTimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD67D3CAED240549D76877B7 /* FTPlayerCachedTimeRange.swift */; };
+		2B5A9081A9149A1B499F7722 /* FTAudioMasterClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B86C3F9C38B6E7EA5D38DF /* FTAudioMasterClock.swift */; };
+		332F232F78E28FCD9B44B180 /* libswscale.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAACFEA3FF7327DD41F5CA0E /* libswscale.xcframework */; };
+		36B67F8038194EAB419E2606 /* FTPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = F55418187496655635A7784D /* FTPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3B26F396C71595A5961C6C21 /* PlaybackPreparationWorkflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CAA988CFA5576132488C20 /* PlaybackPreparationWorkflow.swift */; };
+		3E0D86343802897A09B46F35 /* HTTPDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048499BD81E3DBC5DB9B65EE /* HTTPDataLoader.swift */; };
+		41151B53626D4DFA75B03E0B /* libavfilter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01181812E463EEFEF9A5B153 /* libavfilter.xcframework */; };
+		4185D751A27C656EEBCFED00 /* FTPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3971215BFAEB25749633991C /* FTPlayer.swift */; };
+		423101918E3A2306385305F2 /* MetalVideoRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB0D098332B09AC11AEF826 /* MetalVideoRenderer.swift */; };
+		42A0CC8BA90146BFBAB933B9 /* FTTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C82422158BE52F0DCB7054E /* FTTools.swift */; };
+		43433689792D115F78D5ABAD /* FTPacketQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D681AD5B6F23D3D686E1D58 /* FTPacketQueue.swift */; };
+		4429D7F92843FDDB144F6A3C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 130FBD3C4D7EAD37C0539ECD /* AVFoundation.framework */; };
+		44D29CB7BC0B8B142F82B16F /* FTFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D6EA52FEB2EF9B112E8627 /* FTFrame.swift */; };
+		4662F0058C475FA88D5E8C16 /* FTIndependentHLS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7A391519D3C5F49F7531D /* FTIndependentHLS.swift */; };
+		49635AB14EDB8EBBE8D96376 /* libavformat.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B93C34860BFA0693699DA68 /* libavformat.xcframework */; };
+		49E97D5DA6C9F3CD246712CB /* HTTPByteRangeLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E08DED3E22EA79415C2E39B /* HTTPByteRangeLoader.swift */; };
+		4AC67317FB56B61705A2F60B /* StreamingLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9BA6B4D25F7388C0587682 /* StreamingLoader.swift */; };
+		505CB27B061948D6C9FE7B48 /* libavutil.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04E30FA6C827E713692BBCA9 /* libavutil.xcframework */; };
+		53253E4E26122D1D2A143EDA /* FTHEVCVideoToolBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD5BBF3C581548B01197E07 /* FTHEVCVideoToolBox.swift */; };
+		54246EF4FB6C60AB7DA0581C /* FTPlayerHLSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7568D612FEC66967320DBBB3 /* FTPlayerHLSTests.swift */; };
+		54B4E8CDB82B1B3400CB871F /* PlaybackTelemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C82D396A9645CE7DDFC2E0 /* PlaybackTelemetry.swift */; };
+		58BF5D0E3116FFA222EA3D20 /* PlaybackLifecycleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908F6B9A5A832C97A802D04B /* PlaybackLifecycleController.swift */; };
+		5B30D50D335B5FBE3BF65D24 /* FTPlayerSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A900EE227E21D9E63B44E000 /* FTPlayerSmokeTests.swift */; };
+		5FA7B4D95A14A13898C38332 /* libavdevice.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 726F666894F3018F117C8623 /* libavdevice.xcframework */; };
+		60460B27BE4E626FE9CC8C9D /* FTVideoHardwareDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC949F739A9F6EBC7855F87C /* FTVideoHardwareDecoder.swift */; };
+		60CCAF624904A784D6121A12 /* FTAudioDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECCD39749184964327A41B6 /* FTAudioDecoder.swift */; };
+		629BCC28AC347F4EC8CB0180 /* UnitTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCF4AB1AE651B0902AB3DF5 /* UnitTestCase.swift */; };
+		65628306966A63368220AEFA /* FTVideoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ED6AFB495408F605CF79AB /* FTVideoFrame.swift */; };
+		65A18B2E9B63183ED7122657 /* VTFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275B27898AA4EA6536B252CB /* VTFrame.swift */; };
+		6D071F261BF6076C48804D96 /* FTAVYUVVideoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B658BFC7B66C51214211D9D7 /* FTAVYUVVideoFrame.swift */; };
+		6EA891327CD8742EBA43123C /* FTErrorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C59E150F370AD5781822F9 /* FTErrorUtil.swift */; };
+		6F1A3A513CA1F12E14919B3A /* FTVideoHardwareDecoderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183B68A9D1728C2403FD0E2 /* FTVideoHardwareDecoderFactory.swift */; };
+		7059954235AC49FF04B8CF39 /* FTFrameQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15321970D06C09126F4E0327 /* FTFrameQueue.swift */; };
+		708B80972527818D066EA819 /* libavcodec.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A26280DC13795F12C2CFE0A /* libavcodec.xcframework */; };
+		70D20782B248091EE38A465A /* FTMediaRendererView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5201E2AD7F00CC700A748ACA /* FTMediaRendererView.swift */; };
+		74167E79C3ED42296C29C69B /* HTTPStreamingLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF0C27CB417F15AECFB4BB9 /* HTTPStreamingLoading.swift */; };
+		76280ED71842C67CFD95AAD2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5357848ED6FD2F2C2F6CD700 /* SystemConfiguration.framework */; };
+		7661FCB8E11FC5ADE6D49781 /* FTPlayerMediaInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456C77F3596B2E2A0D12A26B /* FTPlayerMediaInfo.swift */; };
+		779A8A338361CE3019D83D3B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99D41F439DBBF14C5E09B253 /* Accelerate.framework */; };
+		7C999FF40BC56CD3BE4651C9 /* FTPlayerFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1F11DD73BB1B3E543F18F1 /* FTPlayerFormatTests.swift */; };
+		7F7F7992C51ACF2BE446B994 /* FTVSyncDriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331865070EC1BE44919AD276 /* FTVSyncDriver.swift */; };
+		8290F3C33C582F427A048CA5 /* PlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FF4117425A37620F63B0D38 /* PlaybackEngine.swift */; };
+		859F7DF3FD04AFE16F16D426 /* FTFramePool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320C45379009371F3F021028 /* FTFramePool.swift */; };
+		86488A85EB3F1FE0D4BA4EAA /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E2DEAD626534D481C36D00 /* Metal.framework */; };
+		88DCE39DDFF36CE7A765B747 /* MetalVideoShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 746EF02B5D28080C6EB9705A /* MetalVideoShader.metal */; };
+		8C5862D6125406F0FD336D1C /* FTAudioNodeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90A12DBE9147D27A916DFC9 /* FTAudioNodeContext.swift */; };
+		8C84483CA7EA7BE13F1E992F /* FTPlaybackClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF8BD7CDA4F8227143E46BA /* FTPlaybackClock.swift */; };
+		9052CEA3EB067D35009AA308 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B57C2679BC54C277F07C3416 /* Security.framework */; };
+		913636230DA4E8B455D0EDE4 /* FTSystemMasterClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 141BB4F69AD96E371F44DE74 /* FTSystemMasterClock.swift */; };
+		923139167612D80A5FF5B7E4 /* FTHLSMediaPlaylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = C010E84B9C7B8BE0B8128664 /* FTHLSMediaPlaylist.swift */; };
+		97A193F4714E37AE4F8C0564 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 074E278E45AE3FF10486C262 /* VideoToolbox.framework */; };
+		9986C58DB90603D7D59A15C2 /* FTAudioOutputContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E13F87F1CBC0F31C22ADFA /* FTAudioOutputContext.swift */; };
+		99BB1999E6B9D78015167E2F /* FTVideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBEFC273DEBF9EB108AAB26 /* FTVideoDecoder.swift */; };
+		9A1092B0B0D8780F4FE096D8 /* CacheTimelineIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4AF90F0C62924398888BF7 /* CacheTimelineIndex.swift */; };
+		9ACE85E8DAD73718965DE0DF /* FTVideoDecodingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6987C3615749EB6B391603 /* FTVideoDecodingPolicy.swift */; };
+		9E210921E0354ED194D240C5 /* libavformat.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B93C34860BFA0693699DA68 /* libavformat.xcframework */; };
+		A0DE814B0934083E2C0CC7A3 /* libavcodec.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A26280DC13795F12C2CFE0A /* libavcodec.xcframework */; };
+		A17D67C5C073B42FE0B23A59 /* FTPlayerHTTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7595F9AEAF2929EC88A817F5 /* FTPlayerHTTPTests.swift */; };
+		A2E0F9F507F4F905677A89FE /* FTPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 135855467070C9DF70F7BFE6 /* FTPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A350A8147D913E2888DFC335 /* FTDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D629495F14F45753CEB6112 /* FTDecoder.swift */; };
+		A806B70A05FAE734E2D897A4 /* PlaybackSeekPreroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC0D2BE073F1E4735F317CE /* PlaybackSeekPreroll.swift */; };
+		A9CBB287D3A47950E6FA4AB6 /* FTSubtitleFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = A50BE6EF1DEA1E005B06A88A /* FTSubtitleFrame.swift */; };
+		ADA59A0D2DF3AA7B70ECEBA8 /* FTPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 135855467070C9DF70F7BFE6 /* FTPlayer.framework */; };
+		B1961DEE243193B04C75A1B0 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E575AD9924B3A3019B339F72 /* Atomic.swift */; };
+		B1B9578A35F9EE684C2BF208 /* FTPLFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0312FBC00FFC35258EC9F5 /* FTPLFImage.swift */; };
+		B42E9FFEA5D67D8CAA9A0100 /* FTPlayerControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4EC51CA641485DA7680D55 /* FTPlayerControlTests.swift */; };
+		BE94DBE43B80F999BC10B103 /* FTPLFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744E37D75102DF2A4C659620 /* FTPLFView.swift */; };
+		C287A701A235DA586CDF8F4E /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E617D0C5E5A48B907FF4D0 /* RingBuffer.swift */; };
+		C3401ADB862186E138A3497C /* FTPlayerLoadControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CE7C431A34D70AF333B928 /* FTPlayerLoadControl.swift */; };
+		C6E00AA2D0DCC98A19609F8C /* FTVideoDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BBB96CBD000EBE8232AEF35 /* FTVideoDecoding.swift */; };
+		CA142C3D66EB32644C9A7187 /* libswresample.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9D3ADAB619819B42F99D0C /* libswresample.xcframework */; };
+		CBFDD9F71A6B48508F1602AB /* FTFFCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3F0372685BA792E393A31B /* FTFFCommand.swift */; };
+		CD189607E32FAB885CCA068E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F1BD722AEF6D26FA8C39D4 /* AudioToolbox.framework */; };
+		D0338DD7E52C7AEF2C91CFE2 /* UVInterleave.c in Sources */ = {isa = PBXBuildFile; fileRef = 1500A01707F5F47690086D80 /* UVInterleave.c */; };
+		D0E6BA50A9BFA46FC70BCA30 /* FTVideoFrameRGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137C8DFF4AD575CC7229A605 /* FTVideoFrameRGB.swift */; };
+		D5B3027D8C16F415A9EB63C0 /* FTPlayerFrameRateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D5D296AF0C1AB42C35555B /* FTPlayerFrameRateTests.swift */; };
+		DCF4E82DD671925B479C5608 /* FTPlayerHighRateLoadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69D1A024ED3098C72FF8FF9 /* FTPlayerHighRateLoadTests.swift */; };
+		DFFFF8747D20B6B1515BA1A4 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DAF7544C7D2A9A779C00699 /* CoreMedia.framework */; };
+		E0356B24D105AB08B4E22C66 /* FTCacheIOContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD029BE72C627E539E3A3AE1 /* FTCacheIOContext.swift */; };
+		E0EBE2627EE5C0E483C3CDA7 /* FTAudioFrameSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CACF3C8B2BFE176A477D3D7 /* FTAudioFrameSource.swift */; };
+		E3062F4A3CCE1B72DB55AD1F /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D7D81DC794396E1F68843C /* CacheStore.swift */; };
+		E396DEADDC568AB5E487FBA8 /* PlaybackAudioOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15335A29F0D34D135F28F3E5 /* PlaybackAudioOutput.swift */; };
+		E4C89A7827F833791B3F636E /* FTPlayerCacheProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51BEFD7135D828BAC6ED49D8 /* FTPlayerCacheProgress.swift */; };
+		E5720E5FD3F116651789AAE1 /* FTPlayerDiagnosticToggleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4A530D77C6F8E90A840D13 /* FTPlayerDiagnosticToggleTests.swift */; };
+		E5A1109B2D14DF811061F067 /* FTFormatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2851F1C11FB4215364CD515E /* FTFormatContext.swift */; };
+		E89B9D61974966083E9724AF /* libavdevice.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 726F666894F3018F117C8623 /* libavdevice.xcframework */; };
+		EB31668DF5C68B52D184F206 /* FTVideoDecodingStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9E991698A3DF33A7B8FEC9 /* FTVideoDecodingStatistics.swift */; };
+		ED58A2AF1F1BFF6481A1C4F8 /* libswscale.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAACFEA3FF7327DD41F5CA0E /* libswscale.xcframework */; };
+		F18D9163E256A5C49ABF17E4 /* HTTPRangeLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97B57B33C1318CBEA9B5CF2 /* HTTPRangeLoader.swift */; };
+		F1A3BA4BD2757A1637C484D0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B181299F400CEE79AE9898C /* UIKit.framework */; };
+		F1D5894511D343D6379660EA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CEA69E72ACF42082DF91192 /* QuartzCore.framework */; };
+		F2568D157583B6C76BA13846 /* PlaybackSeekController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC33DB1AF9F311F36CDFF3B7 /* PlaybackSeekController.swift */; };
+		F4C289FF866D4B2FC31D3111 /* FTYUVTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939172AFB51DAAB6D5D9DCDF /* FTYUVTools.swift */; };
+		F63A3263AEFA55606C343F60 /* libswresample.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9D3ADAB619819B42F99D0C /* libswresample.xcframework */; };
+		F7074BD344092B3317B1F8D9 /* FTAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCD5F4B41526F3ADC0E57DC /* FTAudioManager.swift */; };
+		F941E8F3072D14B6BB3CDEA9 /* FTPlayerLoadControlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EB8CD96D0D4D72E832B89B /* FTPlayerLoadControlConfiguration.swift */; };
+		FB6558D615227F512CFE43AA /* FTHLSMasterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE84CA76A58FBB44CED03A2A /* FTHLSMasterCache.swift */; };
+		FE026EE390743A86D8F7A187 /* libavutil.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04E30FA6C827E713692BBCA9 /* libavutil.xcframework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A2828B4714876F70C9DC70A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6D8000726EE835D05C9FDF5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 38C424495A494F67BE7D53B9;
+			remoteInfo = FTPlayer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E2709FEFC0C1DFE4433EB535 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A2E0F9F507F4F905677A89FE /* FTPlayer.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		01181812E463EEFEF9A5B153 /* libavfilter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libavfilter.xcframework; path = Vendor/FFmpeg/libavfilter.xcframework; sourceTree = "<group>"; };
+		048499BD81E3DBC5DB9B65EE /* HTTPDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPDataLoader.swift; sourceTree = "<group>"; };
+		04E30FA6C827E713692BBCA9 /* libavutil.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libavutil.xcframework; path = Vendor/FFmpeg/libavutil.xcframework; sourceTree = "<group>"; };
+		06C82D396A9645CE7DDFC2E0 /* PlaybackTelemetry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackTelemetry.swift; sourceTree = "<group>"; };
+		074E278E45AE3FF10486C262 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		0B0312FBC00FFC35258EC9F5 /* FTPLFImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPLFImage.swift; sourceTree = "<group>"; };
+		0DAF7544C7D2A9A779C00699 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0DF8BD7CDA4F8227143E46BA /* FTPlaybackClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlaybackClock.swift; sourceTree = "<group>"; };
+		0E08DED3E22EA79415C2E39B /* HTTPByteRangeLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPByteRangeLoader.swift; sourceTree = "<group>"; };
+		0E6A52D93531A763AAF3C18A /* FTMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTMetadata.swift; sourceTree = "<group>"; };
+		0ECCD39749184964327A41B6 /* FTAudioDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioDecoder.swift; sourceTree = "<group>"; };
+		130FBD3C4D7EAD37C0539ECD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		135855467070C9DF70F7BFE6 /* FTPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FTPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		137C8DFF4AD575CC7229A605 /* FTVideoFrameRGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoFrameRGB.swift; sourceTree = "<group>"; };
+		13B542E65EFCB25C0CE91439 /* FTPlayerSDKConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerSDKConfiguration.swift; sourceTree = "<group>"; };
+		141BB4F69AD96E371F44DE74 /* FTSystemMasterClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTSystemMasterClock.swift; sourceTree = "<group>"; };
+		1500A01707F5F47690086D80 /* UVInterleave.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = UVInterleave.c; sourceTree = "<group>"; };
+		15321970D06C09126F4E0327 /* FTFrameQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTFrameQueue.swift; sourceTree = "<group>"; };
+		15335A29F0D34D135F28F3E5 /* PlaybackAudioOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackAudioOutput.swift; sourceTree = "<group>"; };
+		1D681AD5B6F23D3D686E1D58 /* FTPacketQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPacketQueue.swift; sourceTree = "<group>"; };
+		20D5D296AF0C1AB42C35555B /* FTPlayerFrameRateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerFrameRateTests.swift; sourceTree = "<group>"; };
+		21C59E150F370AD5781822F9 /* FTErrorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTErrorUtil.swift; sourceTree = "<group>"; };
+		2525737A477721CED723853F /* FTPlayerVideoOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerVideoOutput.swift; sourceTree = "<group>"; };
+		275B27898AA4EA6536B252CB /* VTFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTFrame.swift; sourceTree = "<group>"; };
+		2851F1C11FB4215364CD515E /* FTFormatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTFormatContext.swift; sourceTree = "<group>"; };
+		29CE7C431A34D70AF333B928 /* FTPlayerLoadControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerLoadControl.swift; sourceTree = "<group>"; };
+		2B181299F400CEE79AE9898C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		31F1A1C708A9D56AB2FF46A1 /* FTCVYUVVideoFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTCVYUVVideoFrame.swift; sourceTree = "<group>"; };
+		320C45379009371F3F021028 /* FTFramePool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTFramePool.swift; sourceTree = "<group>"; };
+		32B14F86D7C7E3846ADB43C1 /* ffmpeg-build-xcframework.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ffmpeg-build-xcframework.sh"; sourceTree = "<group>"; };
+		331865070EC1BE44919AD276 /* FTVSyncDriver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVSyncDriver.swift; sourceTree = "<group>"; };
+		34E2DEAD626534D481C36D00 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		3971215BFAEB25749633991C /* FTPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayer.swift; sourceTree = "<group>"; };
+		3CEA69E72ACF42082DF91192 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		3D2E88335878036EAF5A6A03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3F4EC51CA641485DA7680D55 /* FTPlayerControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerControlTests.swift; sourceTree = "<group>"; };
+		3F950842D1E8553D018C52A0 /* FTPlayerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDelegate.swift; sourceTree = "<group>"; };
+		456C77F3596B2E2A0D12A26B /* FTPlayerMediaInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerMediaInfo.swift; sourceTree = "<group>"; };
+		4A26280DC13795F12C2CFE0A /* libavcodec.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libavcodec.xcframework; path = Vendor/FFmpeg/libavcodec.xcframework; sourceTree = "<group>"; };
+		4B6987C3615749EB6B391603 /* FTVideoDecodingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoDecodingPolicy.swift; sourceTree = "<group>"; };
+		4B9BA6B4D25F7388C0587682 /* StreamingLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingLoader.swift; sourceTree = "<group>"; };
+		4C9D3ADAB619819B42F99D0C /* libswresample.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libswresample.xcframework; path = Vendor/FFmpeg/libswresample.xcframework; sourceTree = "<group>"; };
+		4CCF4AB1AE651B0902AB3DF5 /* UnitTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitTestCase.swift; sourceTree = "<group>"; };
+		50A98ED930E96BCF53CE055C /* PlaybackEventGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEventGate.swift; sourceTree = "<group>"; };
+		51BEFD7135D828BAC6ED49D8 /* FTPlayerCacheProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerCacheProgress.swift; sourceTree = "<group>"; };
+		5201E2AD7F00CC700A748ACA /* FTMediaRendererView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTMediaRendererView.swift; sourceTree = "<group>"; };
+		5357848ED6FD2F2C2F6CD700 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5C1F11DD73BB1B3E543F18F1 /* FTPlayerFormatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerFormatTests.swift; sourceTree = "<group>"; };
+		62B71E7C9C616CCE481074B8 /* FTH264VideoToolBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTH264VideoToolBox.swift; sourceTree = "<group>"; };
+		63F1BC7938009BDA2DC968ED /* PlaybackCacheSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackCacheSession.swift; sourceTree = "<group>"; };
+		65EB8CD96D0D4D72E832B89B /* FTPlayerLoadControlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerLoadControlConfiguration.swift; sourceTree = "<group>"; };
+		66D7A391519D3C5F49F7531D /* FTIndependentHLS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTIndependentHLS.swift; sourceTree = "<group>"; };
+		6BBEFC273DEBF9EB108AAB26 /* FTVideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoDecoder.swift; sourceTree = "<group>"; };
+		6FCD5F4B41526F3ADC0E57DC /* FTAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioManager.swift; sourceTree = "<group>"; };
+		6FF4117425A37620F63B0D38 /* PlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEngine.swift; sourceTree = "<group>"; };
+		726F666894F3018F117C8623 /* libavdevice.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libavdevice.xcframework; path = Vendor/FFmpeg/libavdevice.xcframework; sourceTree = "<group>"; };
+		744E37D75102DF2A4C659620 /* FTPLFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPLFView.swift; sourceTree = "<group>"; };
+		746EF02B5D28080C6EB9705A /* MetalVideoShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalVideoShader.metal; sourceTree = "<group>"; };
+		74D6EA52FEB2EF9B112E8627 /* FTFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTFrame.swift; sourceTree = "<group>"; };
+		7568D612FEC66967320DBBB3 /* FTPlayerHLSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHLSTests.swift; sourceTree = "<group>"; };
+		7595F9AEAF2929EC88A817F5 /* FTPlayerHTTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHTTPTests.swift; sourceTree = "<group>"; };
+		7A4AF90F0C62924398888BF7 /* CacheTimelineIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheTimelineIndex.swift; sourceTree = "<group>"; };
+		7C82422158BE52F0DCB7054E /* FTTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTTools.swift; sourceTree = "<group>"; };
+		8183B68A9D1728C2403FD0E2 /* FTVideoHardwareDecoderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoHardwareDecoderFactory.swift; sourceTree = "<group>"; };
+		81E13F87F1CBC0F31C22ADFA /* FTAudioOutputContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioOutputContext.swift; sourceTree = "<group>"; };
+		8D629495F14F45753CEB6112 /* FTDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTDecoder.swift; sourceTree = "<group>"; };
+		8FB00AFB7DF4335015CB4015 /* CacheWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheWorker.swift; sourceTree = "<group>"; };
+		908F6B9A5A832C97A802D04B /* PlaybackLifecycleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackLifecycleController.swift; sourceTree = "<group>"; };
+		91CAA988CFA5576132488C20 /* PlaybackPreparationWorkflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackPreparationWorkflow.swift; sourceTree = "<group>"; };
+		939172AFB51DAAB6D5D9DCDF /* FTYUVTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTYUVTools.swift; sourceTree = "<group>"; };
+		94ED6AFB495408F605CF79AB /* FTVideoFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoFrame.swift; sourceTree = "<group>"; };
+		97F1BD722AEF6D26FA8C39D4 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		99D41F439DBBF14C5E09B253 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		9B93C34860BFA0693699DA68 /* libavformat.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libavformat.xcframework; path = Vendor/FFmpeg/libavformat.xcframework; sourceTree = "<group>"; };
+		9BBB96CBD000EBE8232AEF35 /* FTVideoDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoDecoding.swift; sourceTree = "<group>"; };
+		9CACF3C8B2BFE176A477D3D7 /* FTAudioFrameSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioFrameSource.swift; sourceTree = "<group>"; };
+		9CB0D098332B09AC11AEF826 /* MetalVideoRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalVideoRenderer.swift; sourceTree = "<group>"; };
+		9F311A8BFAABADF63A00A490 /* FTPlaybackCacheSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlaybackCacheSession.swift; sourceTree = "<group>"; };
+		9F4A530D77C6F8E90A840D13 /* FTPlayerDiagnosticToggleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDiagnosticToggleTests.swift; sourceTree = "<group>"; };
+		A50BE6EF1DEA1E005B06A88A /* FTSubtitleFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTSubtitleFrame.swift; sourceTree = "<group>"; };
+		A900EE227E21D9E63B44E000 /* FTPlayerSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerSmokeTests.swift; sourceTree = "<group>"; };
+		AA3F0372685BA792E393A31B /* FTFFCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTFFCommand.swift; sourceTree = "<group>"; };
+		AC949F739A9F6EBC7855F87C /* FTVideoHardwareDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoHardwareDecoder.swift; sourceTree = "<group>"; };
+		AEE5790C02283CFCB8E82CFF /* FTPlayerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FTPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0B86C3F9C38B6E7EA5D38DF /* FTAudioMasterClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioMasterClock.swift; sourceTree = "<group>"; };
+		B57C2679BC54C277F07C3416 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		B658BFC7B66C51214211D9D7 /* FTAVYUVVideoFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAVYUVVideoFrame.swift; sourceTree = "<group>"; };
+		B97B57B33C1318CBEA9B5CF2 /* HTTPRangeLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRangeLoader.swift; sourceTree = "<group>"; };
+		BA9E991698A3DF33A7B8FEC9 /* FTVideoDecodingStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTVideoDecodingStatistics.swift; sourceTree = "<group>"; };
+		BF797147FD57EFD29AA74CD8 /* FTArtworkFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTArtworkFrame.swift; sourceTree = "<group>"; };
+		C010E84B9C7B8BE0B8128664 /* FTHLSMediaPlaylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTHLSMediaPlaylist.swift; sourceTree = "<group>"; };
+		C1EC0795E52034DE2865CB27 /* PlaybackComponentFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackComponentFactory.swift; sourceTree = "<group>"; };
+		C4E617D0C5E5A48B907FF4D0 /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
+		CD67D3CAED240549D76877B7 /* FTPlayerCachedTimeRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerCachedTimeRange.swift; sourceTree = "<group>"; };
+		CF5A747F24607EBDBD6C2008 /* ffmpeg-build-libs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ffmpeg-build-libs.sh"; sourceTree = "<group>"; };
+		D2540425B0B2E9684FF60927 /* FTPlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerState.swift; sourceTree = "<group>"; };
+		D69D1A024ED3098C72FF8FF9 /* FTPlayerHighRateLoadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHighRateLoadTests.swift; sourceTree = "<group>"; };
+		D9102CA05E5736C5CF3CF870 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		DAACFEA3FF7327DD41F5CA0E /* libswscale.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libswscale.xcframework; path = Vendor/FFmpeg/libswscale.xcframework; sourceTree = "<group>"; };
+		DC33DB1AF9F311F36CDFF3B7 /* PlaybackSeekController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSeekController.swift; sourceTree = "<group>"; };
+		E4A37B15939968C1BB7D15C7 /* FTPlayerDiagnostic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDiagnostic.swift; sourceTree = "<group>"; };
+		E575AD9924B3A3019B339F72 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		E90A12DBE9147D27A916DFC9 /* FTAudioNodeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioNodeContext.swift; sourceTree = "<group>"; };
+		E9799E90DACF47E15E525D22 /* FTTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTTrack.swift; sourceTree = "<group>"; };
+		EACA6C83A017AE7C9472D033 /* FTAudioFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTAudioFrame.swift; sourceTree = "<group>"; };
+		EAF0C27CB417F15AECFB4BB9 /* HTTPStreamingLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPStreamingLoading.swift; sourceTree = "<group>"; };
+		EBC0D2BE073F1E4735F317CE /* PlaybackSeekPreroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSeekPreroll.swift; sourceTree = "<group>"; };
+		EE84CA76A58FBB44CED03A2A /* FTHLSMasterCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTHLSMasterCache.swift; sourceTree = "<group>"; };
+		F1D7D81DC794396E1F68843C /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
+		F55418187496655635A7784D /* FTPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTPlayer.h; sourceTree = "<group>"; };
+		FCD5BBF3C581548B01197E07 /* FTHEVCVideoToolBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTHEVCVideoToolBox.swift; sourceTree = "<group>"; };
+		FD029BE72C627E539E3A3AE1 /* FTCacheIOContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTCacheIOContext.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		97686B1C9D4284781DF27F3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ADA59A0D2DF3AA7B70ECEBA8 /* FTPlayer.framework in Frameworks */,
+				708B80972527818D066EA819 /* libavcodec.xcframework in Frameworks */,
+				5FA7B4D95A14A13898C38332 /* libavdevice.xcframework in Frameworks */,
+				41151B53626D4DFA75B03E0B /* libavfilter.xcframework in Frameworks */,
+				9E210921E0354ED194D240C5 /* libavformat.xcframework in Frameworks */,
+				505CB27B061948D6C9FE7B48 /* libavutil.xcframework in Frameworks */,
+				F63A3263AEFA55606C343F60 /* libswresample.xcframework in Frameworks */,
+				ED58A2AF1F1BFF6481A1C4F8 /* libswscale.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FFAAF7EBC4D4AF8F516FE5E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0DE814B0934083E2C0CC7A3 /* libavcodec.xcframework in Frameworks */,
+				E89B9D61974966083E9724AF /* libavdevice.xcframework in Frameworks */,
+				0BC7BADD0DD921A564812F54 /* libavfilter.xcframework in Frameworks */,
+				49635AB14EDB8EBBE8D96376 /* libavformat.xcframework in Frameworks */,
+				FE026EE390743A86D8F7A187 /* libavutil.xcframework in Frameworks */,
+				CA142C3D66EB32644C9A7187 /* libswresample.xcframework in Frameworks */,
+				332F232F78E28FCD9B44B180 /* libswscale.xcframework in Frameworks */,
+				F1A3BA4BD2757A1637C484D0 /* UIKit.framework in Frameworks */,
+				4429D7F92843FDDB144F6A3C /* AVFoundation.framework in Frameworks */,
+				CD189607E32FAB885CCA068E /* AudioToolbox.framework in Frameworks */,
+				97A193F4714E37AE4F8C0564 /* VideoToolbox.framework in Frameworks */,
+				DFFFF8747D20B6B1515BA1A4 /* CoreMedia.framework in Frameworks */,
+				01D13C05279A6F9917DC6761 /* CoreVideo.framework in Frameworks */,
+				86488A85EB3F1FE0D4BA4EAA /* Metal.framework in Frameworks */,
+				F1D5894511D343D6379660EA /* QuartzCore.framework in Frameworks */,
+				779A8A338361CE3019D83D3B /* Accelerate.framework in Frameworks */,
+				9052CEA3EB067D35009AA308 /* Security.framework in Frameworks */,
+				76280ED71842C67CFD95AAD2 /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		020118D1AA549952C0212FFF /* Buffering */ = {
+			isa = PBXGroup;
+			children = (
+				7595F9AEAF2929EC88A817F5 /* FTPlayerHTTPTests.swift */,
+			);
+			path = Buffering;
+			sourceTree = "<group>";
+		};
+		02733CEE7EA53FAD36FDEF7F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				99D41F439DBBF14C5E09B253 /* Accelerate.framework */,
+				97F1BD722AEF6D26FA8C39D4 /* AudioToolbox.framework */,
+				130FBD3C4D7EAD37C0539ECD /* AVFoundation.framework */,
+				0DAF7544C7D2A9A779C00699 /* CoreMedia.framework */,
+				D9102CA05E5736C5CF3CF870 /* CoreVideo.framework */,
+				4A26280DC13795F12C2CFE0A /* libavcodec.xcframework */,
+				726F666894F3018F117C8623 /* libavdevice.xcframework */,
+				01181812E463EEFEF9A5B153 /* libavfilter.xcframework */,
+				9B93C34860BFA0693699DA68 /* libavformat.xcframework */,
+				04E30FA6C827E713692BBCA9 /* libavutil.xcframework */,
+				4C9D3ADAB619819B42F99D0C /* libswresample.xcframework */,
+				DAACFEA3FF7327DD41F5CA0E /* libswscale.xcframework */,
+				34E2DEAD626534D481C36D00 /* Metal.framework */,
+				3CEA69E72ACF42082DF91192 /* QuartzCore.framework */,
+				B57C2679BC54C277F07C3416 /* Security.framework */,
+				5357848ED6FD2F2C2F6CD700 /* SystemConfiguration.framework */,
+				2B181299F400CEE79AE9898C /* UIKit.framework */,
+				074E278E45AE3FF10486C262 /* VideoToolbox.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		058C77BAFB3FCD02838B06FD /* Frames */ = {
+			isa = PBXGroup;
+			children = (
+				BF797147FD57EFD29AA74CD8 /* FTArtworkFrame.swift */,
+				EACA6C83A017AE7C9472D033 /* FTAudioFrame.swift */,
+				B658BFC7B66C51214211D9D7 /* FTAVYUVVideoFrame.swift */,
+				31F1A1C708A9D56AB2FF46A1 /* FTCVYUVVideoFrame.swift */,
+				74D6EA52FEB2EF9B112E8627 /* FTFrame.swift */,
+				A50BE6EF1DEA1E005B06A88A /* FTSubtitleFrame.swift */,
+				94ED6AFB495408F605CF79AB /* FTVideoFrame.swift */,
+				137C8DFF4AD575CC7229A605 /* FTVideoFrameRGB.swift */,
+				1500A01707F5F47690086D80 /* UVInterleave.c */,
+			);
+			path = Frames;
+			sourceTree = "<group>";
+		};
+		0EB5113D5C94B50C751C0459 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				6BBEFC273DEBF9EB108AAB26 /* FTVideoDecoder.swift */,
+				9BBB96CBD000EBE8232AEF35 /* FTVideoDecoding.swift */,
+				9663C463B4CF01F4935719F3 /* Conversion */,
+				97A145DA2CDBB658F0243219 /* VideoToolbox */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
+		1888F18A5CAAB63A3A08FD0C /* Timing */ = {
+			isa = PBXGroup;
+			children = (
+				B0B86C3F9C38B6E7EA5D38DF /* FTAudioMasterClock.swift */,
+				0DF8BD7CDA4F8227143E46BA /* FTPlaybackClock.swift */,
+				141BB4F69AD96E371F44DE74 /* FTSystemMasterClock.swift */,
+				331865070EC1BE44919AD276 /* FTVSyncDriver.swift */,
+			);
+			path = Timing;
+			sourceTree = "<group>";
+		};
+		293CF747DA7BC7BDFE292F22 /* FFmpeg */ = {
+			isa = PBXGroup;
+			children = (
+				CF5A747F24607EBDBD6C2008 /* ffmpeg-build-libs.sh */,
+				32B14F86D7C7E3846ADB43C1 /* ffmpeg-build-xcframework.sh */,
+				3D2E88335878036EAF5A6A03 /* README.md */,
+			);
+			path = FFmpeg;
+			sourceTree = "<group>";
+		};
+		2BBEFBC38D4F344C1CAE5EA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				135855467070C9DF70F7BFE6 /* FTPlayer.framework */,
+				AEE5790C02283CFCB8E82CFF /* FTPlayerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2C627C8406746BF31439F5A1 /* Frames */ = {
+			isa = PBXGroup;
+			children = (
+				5C1F11DD73BB1B3E543F18F1 /* FTPlayerFormatTests.swift */,
+			);
+			path = Frames;
+			sourceTree = "<group>";
+		};
+		2CFF4556C3E406C6A4CCC6CA /* Concurrency */ = {
+			isa = PBXGroup;
+			children = (
+				E575AD9924B3A3019B339F72 /* Atomic.swift */,
+			);
+			path = Concurrency;
+			sourceTree = "<group>";
+		};
+		2D3EF0058FF7B41E3D024800 /* HLS */ = {
+			isa = PBXGroup;
+			children = (
+				7568D612FEC66967320DBBB3 /* FTPlayerHLSTests.swift */,
+			);
+			path = HLS;
+			sourceTree = "<group>";
+		};
+		3FA3423D0A366E144C850F4E /* Buffering */ = {
+			isa = PBXGroup;
+			children = (
+				320C45379009371F3F021028 /* FTFramePool.swift */,
+				15321970D06C09126F4E0327 /* FTFrameQueue.swift */,
+				1D681AD5B6F23D3D686E1D58 /* FTPacketQueue.swift */,
+				29CE7C431A34D70AF333B928 /* FTPlayerLoadControl.swift */,
+				C4E617D0C5E5A48B907FF4D0 /* RingBuffer.swift */,
+			);
+			path = Buffering;
+			sourceTree = "<group>";
+		};
+		47817E1BEF27B37128E5A26D /* Playback */ = {
+			isa = PBXGroup;
+			children = (
+				3F4EC51CA641485DA7680D55 /* FTPlayerControlTests.swift */,
+				D69D1A024ED3098C72FF8FF9 /* FTPlayerHighRateLoadTests.swift */,
+			);
+			path = Playback;
+			sourceTree = "<group>";
+		};
+		4C51803E47B6AE40C96A6393 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				293CF747DA7BC7BDFE292F22 /* FFmpeg */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+		55C98E4233D4A35DF064E7B2 /* Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				5201E2AD7F00CC700A748ACA /* FTMediaRendererView.swift */,
+				9CB0D098332B09AC11AEF826 /* MetalVideoRenderer.swift */,
+				746EF02B5D28080C6EB9705A /* MetalVideoShader.metal */,
+			);
+			path = Rendering;
+			sourceTree = "<group>";
+		};
+		5AB3F69FF95A0D20D3B3D8A6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0E6A52D93531A763AAF3C18A /* FTMetadata.swift */,
+				E9799E90DACF47E15E525D22 /* FTTrack.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5CD1A9D86FE0253E148CB8BD /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				7C82422158BE52F0DCB7054E /* FTTools.swift */,
+				2CFF4556C3E406C6A4CCC6CA /* Concurrency */,
+				6873F3065530E5E03B9AEA02 /* FFmpeg */,
+				D54DE4DB275CDF99AC0EDAA5 /* Platform */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		5DF86E569D0A78B2C480DBA0 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F55418187496655635A7784D /* FTPlayer.h */,
+				B5F094476C51DF728B6FD963 /* API */,
+				98B7037BCADF71E6998F2405 /* Audio */,
+				A314140D7EE0F31E8C8059A2 /* Cache */,
+				C9C17CEAE2BC02F8BFA4B75F /* Decoding */,
+				85D485E58E999D1E4DA30516 /* Demux */,
+				702F57DA59DDD72D7D64232D /* Diagnostics */,
+				A315DB55E81E020AC66DC4F2 /* Networking */,
+				678AB34EFCD9CFCE61E242FC /* Playback */,
+				55C98E4233D4A35DF064E7B2 /* Rendering */,
+				5CD1A9D86FE0253E148CB8BD /* Support */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		678AB34EFCD9CFCE61E242FC /* Playback */ = {
+			isa = PBXGroup;
+			children = (
+				8D629495F14F45753CEB6112 /* FTDecoder.swift */,
+				C1EC0795E52034DE2865CB27 /* PlaybackComponentFactory.swift */,
+				6FF4117425A37620F63B0D38 /* PlaybackEngine.swift */,
+				50A98ED930E96BCF53CE055C /* PlaybackEventGate.swift */,
+				908F6B9A5A832C97A802D04B /* PlaybackLifecycleController.swift */,
+				91CAA988CFA5576132488C20 /* PlaybackPreparationWorkflow.swift */,
+				DC33DB1AF9F311F36CDFF3B7 /* PlaybackSeekController.swift */,
+				EBC0D2BE073F1E4735F317CE /* PlaybackSeekPreroll.swift */,
+				3FA3423D0A366E144C850F4E /* Buffering */,
+				1888F18A5CAAB63A3A08FD0C /* Timing */,
+			);
+			path = Playback;
+			sourceTree = "<group>";
+		};
+		6873F3065530E5E03B9AEA02 /* FFmpeg */ = {
+			isa = PBXGroup;
+			children = (
+				21C59E150F370AD5781822F9 /* FTErrorUtil.swift */,
+				AA3F0372685BA792E393A31B /* FTFFCommand.swift */,
+			);
+			path = FFmpeg;
+			sourceTree = "<group>";
+		};
+		6CB679813B07C4236BBF35D1 /* Diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				9F4A530D77C6F8E90A840D13 /* FTPlayerDiagnosticToggleTests.swift */,
+				A900EE227E21D9E63B44E000 /* FTPlayerSmokeTests.swift */,
+			);
+			path = Diagnostics;
+			sourceTree = "<group>";
+		};
+		702F57DA59DDD72D7D64232D /* Diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				E4A37B15939968C1BB7D15C7 /* FTPlayerDiagnostic.swift */,
+				06C82D396A9645CE7DDFC2E0 /* PlaybackTelemetry.swift */,
+			);
+			path = Diagnostics;
+			sourceTree = "<group>";
+		};
+		85D485E58E999D1E4DA30516 /* Demux */ = {
+			isa = PBXGroup;
+			children = (
+				FD029BE72C627E539E3A3AE1 /* FTCacheIOContext.swift */,
+				2851F1C11FB4215364CD515E /* FTFormatContext.swift */,
+				91F990075CBB2766BD116614 /* HLS */,
+				5AB3F69FF95A0D20D3B3D8A6 /* Models */,
+			);
+			path = Demux;
+			sourceTree = "<group>";
+		};
+		91F990075CBB2766BD116614 /* HLS */ = {
+			isa = PBXGroup;
+			children = (
+				EE84CA76A58FBB44CED03A2A /* FTHLSMasterCache.swift */,
+				C010E84B9C7B8BE0B8128664 /* FTHLSMediaPlaylist.swift */,
+				66D7A391519D3C5F49F7531D /* FTIndependentHLS.swift */,
+			);
+			path = HLS;
+			sourceTree = "<group>";
+		};
+		932F4642EF3B0FB41EB36A85 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				65EB8CD96D0D4D72E832B89B /* FTPlayerLoadControlConfiguration.swift */,
+				13B542E65EFCB25C0CE91439 /* FTPlayerSDKConfiguration.swift */,
+				4B6987C3615749EB6B391603 /* FTVideoDecodingPolicy.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		9663C463B4CF01F4935719F3 /* Conversion */ = {
+			isa = PBXGroup;
+			children = (
+				939172AFB51DAAB6D5D9DCDF /* FTYUVTools.swift */,
+			);
+			path = Conversion;
+			sourceTree = "<group>";
+		};
+		97A145DA2CDBB658F0243219 /* VideoToolbox */ = {
+			isa = PBXGroup;
+			children = (
+				62B71E7C9C616CCE481074B8 /* FTH264VideoToolBox.swift */,
+				FCD5BBF3C581548B01197E07 /* FTHEVCVideoToolBox.swift */,
+				AC949F739A9F6EBC7855F87C /* FTVideoHardwareDecoder.swift */,
+				8183B68A9D1728C2403FD0E2 /* FTVideoHardwareDecoderFactory.swift */,
+				275B27898AA4EA6536B252CB /* VTFrame.swift */,
+			);
+			path = VideoToolbox;
+			sourceTree = "<group>";
+		};
+		98B7037BCADF71E6998F2405 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				9CACF3C8B2BFE176A477D3D7 /* FTAudioFrameSource.swift */,
+				6FCD5F4B41526F3ADC0E57DC /* FTAudioManager.swift */,
+				E90A12DBE9147D27A916DFC9 /* FTAudioNodeContext.swift */,
+				81E13F87F1CBC0F31C22ADFA /* FTAudioOutputContext.swift */,
+				15335A29F0D34D135F28F3E5 /* PlaybackAudioOutput.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		9C25C75C65E9E301B2E7F9B5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CD67D3CAED240549D76877B7 /* FTPlayerCachedTimeRange.swift */,
+				51BEFD7135D828BAC6ED49D8 /* FTPlayerCacheProgress.swift */,
+				456C77F3596B2E2A0D12A26B /* FTPlayerMediaInfo.swift */,
+				BA9E991698A3DF33A7B8FEC9 /* FTVideoDecodingStatistics.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A20AA4BC10CB7BF690CF0F89 = {
+			isa = PBXGroup;
+			children = (
+				C23442BBD65540FB7E2248B9 /* FTPlayerTests */,
+				4C51803E47B6AE40C96A6393 /* Scripts */,
+				5DF86E569D0A78B2C480DBA0 /* Sources */,
+				02733CEE7EA53FAD36FDEF7F /* Frameworks */,
+				2BBEFBC38D4F344C1CAE5EA2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A314140D7EE0F31E8C8059A2 /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				F1D7D81DC794396E1F68843C /* CacheStore.swift */,
+				7A4AF90F0C62924398888BF7 /* CacheTimelineIndex.swift */,
+				8FB00AFB7DF4335015CB4015 /* CacheWorker.swift */,
+				9F311A8BFAABADF63A00A490 /* FTPlaybackCacheSession.swift */,
+				63F1BC7938009BDA2DC968ED /* PlaybackCacheSession.swift */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
+		A315DB55E81E020AC66DC4F2 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				0E08DED3E22EA79415C2E39B /* HTTPByteRangeLoader.swift */,
+				048499BD81E3DBC5DB9B65EE /* HTTPDataLoader.swift */,
+				B97B57B33C1318CBEA9B5CF2 /* HTTPRangeLoader.swift */,
+				EAF0C27CB417F15AECFB4BB9 /* HTTPStreamingLoading.swift */,
+				4B9BA6B4D25F7388C0587682 /* StreamingLoader.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		AD8DBA29805767AD8F390A91 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				0ECCD39749184964327A41B6 /* FTAudioDecoder.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		B5F094476C51DF728B6FD963 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				3971215BFAEB25749633991C /* FTPlayer.swift */,
+				3F950842D1E8553D018C52A0 /* FTPlayerDelegate.swift */,
+				D2540425B0B2E9684FF60927 /* FTPlayerState.swift */,
+				2525737A477721CED723853F /* FTPlayerVideoOutput.swift */,
+				932F4642EF3B0FB41EB36A85 /* Configuration */,
+				9C25C75C65E9E301B2E7F9B5 /* Models */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		B96A0C2D40CEA4F7739CE528 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				4CCF4AB1AE651B0902AB3DF5 /* UnitTestCase.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		C23442BBD65540FB7E2248B9 /* FTPlayerTests */ = {
+			isa = PBXGroup;
+			children = (
+				020118D1AA549952C0212FFF /* Buffering */,
+				6CB679813B07C4236BBF35D1 /* Diagnostics */,
+				2C627C8406746BF31439F5A1 /* Frames */,
+				2D3EF0058FF7B41E3D024800 /* HLS */,
+				47817E1BEF27B37128E5A26D /* Playback */,
+				C4B31A59919AC67783FA5E49 /* Statistics */,
+				B96A0C2D40CEA4F7739CE528 /* Support */,
+			);
+			path = FTPlayerTests;
+			sourceTree = "<group>";
+		};
+		C4B31A59919AC67783FA5E49 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				20D5D296AF0C1AB42C35555B /* FTPlayerFrameRateTests.swift */,
+			);
+			path = Statistics;
+			sourceTree = "<group>";
+		};
+		C9C17CEAE2BC02F8BFA4B75F /* Decoding */ = {
+			isa = PBXGroup;
+			children = (
+				AD8DBA29805767AD8F390A91 /* Audio */,
+				058C77BAFB3FCD02838B06FD /* Frames */,
+				0EB5113D5C94B50C751C0459 /* Video */,
+			);
+			path = Decoding;
+			sourceTree = "<group>";
+		};
+		D54DE4DB275CDF99AC0EDAA5 /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				0B0312FBC00FFC35258EC9F5 /* FTPLFImage.swift */,
+				744E37D75102DF2A4C659620 /* FTPLFView.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8FCCDAD0E832BC2299134C7D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36B67F8038194EAB419E2606 /* FTPlayer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		331C6EF3118DF213BC9A5F97 /* FTPlayerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1AB4ABB3F7F84DF40D5C71B /* Build configuration list for PBXNativeTarget "FTPlayerTests" */;
+			buildPhases = (
+				8272B4F22FB94700CDD3BA5A /* Sources */,
+				97686B1C9D4284781DF27F3A /* Frameworks */,
+				E2709FEFC0C1DFE4433EB535 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				87FBDA020E19125D050AA675 /* PBXTargetDependency */,
+			);
+			name = FTPlayerTests;
+			packageProductDependencies = (
+			);
+			productName = FTPlayerTests;
+			productReference = AEE5790C02283CFCB8E82CFF /* FTPlayerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		38C424495A494F67BE7D53B9 /* FTPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30D5826B40D38BC9B8635A51 /* Build configuration list for PBXNativeTarget "FTPlayer" */;
+			buildPhases = (
+				8FCCDAD0E832BC2299134C7D /* Headers */,
+				AF02599AEDA4F8F5F1DEE18E /* Sources */,
+				FFAAF7EBC4D4AF8F516FE5E2 /* Frameworks */,
+				A00BF1028546BFAF419ACC43 /* Create XCFramework */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FTPlayer;
+			packageProductDependencies = (
+			);
+			productName = FTPlayer;
+			productReference = 135855467070C9DF70F7BFE6 /* FTPlayer.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C6D8000726EE835D05C9FDF5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					331C6EF3118DF213BC9A5F97 = {
+						ProvisioningStyle = Automatic;
+					};
+					38C424495A494F67BE7D53B9 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 59D77032FEE0A1A494F5F27A /* Build configuration list for PBXProject "FTPlayer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A20AA4BC10CB7BF690CF0F89;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2BBEFBC38D4F344C1CAE5EA2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38C424495A494F67BE7D53B9 /* FTPlayer */,
+				331C6EF3118DF213BC9A5F97 /* FTPlayerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A00BF1028546BFAF419ACC43 /* Create XCFramework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Create XCFramework";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(PROJECT_DIR)/build/$(CONFIGURATION)/$(PRODUCT_NAME).xcframework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\n\nif [[ \"${FTPLAYER_CREATE_XCFRAMEWORK:-YES}\" == \"NO\" || \"${ACTION:-}\" == \"indexbuild\" ]]; then\n    exit 0\nfi\ncase \"${PLATFORM_NAME:-}\" in\n    iphoneos|iphonesimulator) ;;\n    *) echo \"Skipping XCFramework packaging for ${PLATFORM_NAME:-unknown platform}\"; exit 0 ;;\nesac\n\n# Keep Xcode build packages separate from the verified distribution package.\nXCFRAMEWORK_OUTPUT=\"${PROJECT_DIR}/build/${CONFIGURATION}/${PRODUCT_NAME}.xcframework\"\nFRAMEWORK_NAME=\"${FULL_PRODUCT_NAME:-${PRODUCT_NAME}.framework}\"\nIPHONEOS_FRAMEWORK=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}\"\nSIMULATOR_FRAMEWORK=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}\"\n\n# Archive/install builds may put the current product outside BUILD_DIR.\nif [[ -n \"${TARGET_BUILD_DIR:-}\" && -d \"${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}\" ]]; then\n    if [[ \"${PLATFORM_NAME}\" == \"iphoneos\" ]]; then\n        IPHONEOS_FRAMEWORK=\"${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}\"\n    else\n        SIMULATOR_FRAMEWORK=\"${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}\"\n    fi\nfi\n\nARGS=()\nSLICE_COUNT=0\nfor FRAMEWORK in \"${IPHONEOS_FRAMEWORK}\" \"${SIMULATOR_FRAMEWORK}\"; do\n    if [[ -d \"${FRAMEWORK}\" && -f \"${FRAMEWORK}/${PRODUCT_NAME}\" ]]; then\n        echo \"Framework: ${FRAMEWORK}\"\n        ARGS+=(\"-framework\" \"${FRAMEWORK}\")\n        SLICE_COUNT=$((SLICE_COUNT + 1))\n    else\n        echo \"warning: Framework not built yet: ${FRAMEWORK}\"\n    fi\ndone\n\nif [[ ${SLICE_COUNT} -eq 0 ]]; then\n    echo \"error: No built framework found for XCFramework packaging.\"\n    exit 1\nfi\n\nmkdir -p \"$(dirname \"${XCFRAMEWORK_OUTPUT}\")\"\nWORK_DIR=\"$(mktemp -d \"${PROJECT_DIR}/build/.xcframework.XXXXXX\")\"\ntrap 'rm -rf \"${WORK_DIR}\"' EXIT\nxcodebuild -create-xcframework \"${ARGS[@]}\" -output \"${WORK_DIR}/${PRODUCT_NAME}.xcframework\"\n\n# Keep the existing package if creation fails.\nrm -rf \"${XCFRAMEWORK_OUTPUT}\"\nmv \"${WORK_DIR}/${PRODUCT_NAME}.xcframework\" \"${XCFRAMEWORK_OUTPUT}\"\necho \"Created XCFramework (${SLICE_COUNT} platform slices): ${XCFRAMEWORK_OUTPUT}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8272B4F22FB94700CDD3BA5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B42E9FFEA5D67D8CAA9A0100 /* FTPlayerControlTests.swift in Sources */,
+				E5720E5FD3F116651789AAE1 /* FTPlayerDiagnosticToggleTests.swift in Sources */,
+				7C999FF40BC56CD3BE4651C9 /* FTPlayerFormatTests.swift in Sources */,
+				D5B3027D8C16F415A9EB63C0 /* FTPlayerFrameRateTests.swift in Sources */,
+				54246EF4FB6C60AB7DA0581C /* FTPlayerHLSTests.swift in Sources */,
+				A17D67C5C073B42FE0B23A59 /* FTPlayerHTTPTests.swift in Sources */,
+				DCF4E82DD671925B479C5608 /* FTPlayerHighRateLoadTests.swift in Sources */,
+				5B30D50D335B5FBE3BF65D24 /* FTPlayerSmokeTests.swift in Sources */,
+				629BCC28AC347F4EC8CB0180 /* UnitTestCase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF02599AEDA4F8F5F1DEE18E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1961DEE243193B04C75A1B0 /* Atomic.swift in Sources */,
+				E3062F4A3CCE1B72DB55AD1F /* CacheStore.swift in Sources */,
+				9A1092B0B0D8780F4FE096D8 /* CacheTimelineIndex.swift in Sources */,
+				1796F49B2BCD03FFCB15C136 /* CacheWorker.swift in Sources */,
+				6D071F261BF6076C48804D96 /* FTAVYUVVideoFrame.swift in Sources */,
+				0FBED189C764A8E4837A9F0A /* FTArtworkFrame.swift in Sources */,
+				60CCAF624904A784D6121A12 /* FTAudioDecoder.swift in Sources */,
+				1B0B8729061DD62F7B8A1A8E /* FTAudioFrame.swift in Sources */,
+				E0EBE2627EE5C0E483C3CDA7 /* FTAudioFrameSource.swift in Sources */,
+				F7074BD344092B3317B1F8D9 /* FTAudioManager.swift in Sources */,
+				2B5A9081A9149A1B499F7722 /* FTAudioMasterClock.swift in Sources */,
+				8C5862D6125406F0FD336D1C /* FTAudioNodeContext.swift in Sources */,
+				9986C58DB90603D7D59A15C2 /* FTAudioOutputContext.swift in Sources */,
+				0F1FEFC3AD4844140E914448 /* FTCVYUVVideoFrame.swift in Sources */,
+				E0356B24D105AB08B4E22C66 /* FTCacheIOContext.swift in Sources */,
+				A350A8147D913E2888DFC335 /* FTDecoder.swift in Sources */,
+				6EA891327CD8742EBA43123C /* FTErrorUtil.swift in Sources */,
+				CBFDD9F71A6B48508F1602AB /* FTFFCommand.swift in Sources */,
+				E5A1109B2D14DF811061F067 /* FTFormatContext.swift in Sources */,
+				44D29CB7BC0B8B142F82B16F /* FTFrame.swift in Sources */,
+				859F7DF3FD04AFE16F16D426 /* FTFramePool.swift in Sources */,
+				7059954235AC49FF04B8CF39 /* FTFrameQueue.swift in Sources */,
+				163364E8D2DE54D9E7CDB005 /* FTH264VideoToolBox.swift in Sources */,
+				53253E4E26122D1D2A143EDA /* FTHEVCVideoToolBox.swift in Sources */,
+				FB6558D615227F512CFE43AA /* FTHLSMasterCache.swift in Sources */,
+				923139167612D80A5FF5B7E4 /* FTHLSMediaPlaylist.swift in Sources */,
+				4662F0058C475FA88D5E8C16 /* FTIndependentHLS.swift in Sources */,
+				70D20782B248091EE38A465A /* FTMediaRendererView.swift in Sources */,
+				0297CE6BDE690987F3704DA0 /* FTMetadata.swift in Sources */,
+				B1B9578A35F9EE684C2BF208 /* FTPLFImage.swift in Sources */,
+				BE94DBE43B80F999BC10B103 /* FTPLFView.swift in Sources */,
+				43433689792D115F78D5ABAD /* FTPacketQueue.swift in Sources */,
+				019334CCCB7B364828D137DD /* FTPlaybackCacheSession.swift in Sources */,
+				8C84483CA7EA7BE13F1E992F /* FTPlaybackClock.swift in Sources */,
+				4185D751A27C656EEBCFED00 /* FTPlayer.swift in Sources */,
+				E4C89A7827F833791B3F636E /* FTPlayerCacheProgress.swift in Sources */,
+				2B530FD3E80DE66826F20A85 /* FTPlayerCachedTimeRange.swift in Sources */,
+				0CEA3C4BA68970B635ABD380 /* FTPlayerDelegate.swift in Sources */,
+				07A217B0B745C2C62CFE0AFD /* FTPlayerDiagnostic.swift in Sources */,
+				C3401ADB862186E138A3497C /* FTPlayerLoadControl.swift in Sources */,
+				F941E8F3072D14B6BB3CDEA9 /* FTPlayerLoadControlConfiguration.swift in Sources */,
+				7661FCB8E11FC5ADE6D49781 /* FTPlayerMediaInfo.swift in Sources */,
+				1E2A90AEFBAB9529D55EE1CD /* FTPlayerSDKConfiguration.swift in Sources */,
+				15F4F9E2079FB911BC6DAA76 /* FTPlayerState.swift in Sources */,
+				23C52ADAABFD9516A0FB4AE4 /* FTPlayerVideoOutput.swift in Sources */,
+				A9CBB287D3A47950E6FA4AB6 /* FTSubtitleFrame.swift in Sources */,
+				913636230DA4E8B455D0EDE4 /* FTSystemMasterClock.swift in Sources */,
+				42A0CC8BA90146BFBAB933B9 /* FTTools.swift in Sources */,
+				1480E8330E510429810F8960 /* FTTrack.swift in Sources */,
+				7F7F7992C51ACF2BE446B994 /* FTVSyncDriver.swift in Sources */,
+				99BB1999E6B9D78015167E2F /* FTVideoDecoder.swift in Sources */,
+				C6E00AA2D0DCC98A19609F8C /* FTVideoDecoding.swift in Sources */,
+				9ACE85E8DAD73718965DE0DF /* FTVideoDecodingPolicy.swift in Sources */,
+				EB31668DF5C68B52D184F206 /* FTVideoDecodingStatistics.swift in Sources */,
+				65628306966A63368220AEFA /* FTVideoFrame.swift in Sources */,
+				D0E6BA50A9BFA46FC70BCA30 /* FTVideoFrameRGB.swift in Sources */,
+				60460B27BE4E626FE9CC8C9D /* FTVideoHardwareDecoder.swift in Sources */,
+				6F1A3A513CA1F12E14919B3A /* FTVideoHardwareDecoderFactory.swift in Sources */,
+				F4C289FF866D4B2FC31D3111 /* FTYUVTools.swift in Sources */,
+				49E97D5DA6C9F3CD246712CB /* HTTPByteRangeLoader.swift in Sources */,
+				3E0D86343802897A09B46F35 /* HTTPDataLoader.swift in Sources */,
+				F18D9163E256A5C49ABF17E4 /* HTTPRangeLoader.swift in Sources */,
+				74167E79C3ED42296C29C69B /* HTTPStreamingLoading.swift in Sources */,
+				423101918E3A2306385305F2 /* MetalVideoRenderer.swift in Sources */,
+				88DCE39DDFF36CE7A765B747 /* MetalVideoShader.metal in Sources */,
+				E396DEADDC568AB5E487FBA8 /* PlaybackAudioOutput.swift in Sources */,
+				242E95520C1B1302D1EC0B6C /* PlaybackCacheSession.swift in Sources */,
+				22A357ED964DDE64B5EB42CB /* PlaybackComponentFactory.swift in Sources */,
+				8290F3C33C582F427A048CA5 /* PlaybackEngine.swift in Sources */,
+				1315CFBA816FAAF9E56FF499 /* PlaybackEventGate.swift in Sources */,
+				58BF5D0E3116FFA222EA3D20 /* PlaybackLifecycleController.swift in Sources */,
+				3B26F396C71595A5961C6C21 /* PlaybackPreparationWorkflow.swift in Sources */,
+				F2568D157583B6C76BA13846 /* PlaybackSeekController.swift in Sources */,
+				A806B70A05FAE734E2D897A4 /* PlaybackSeekPreroll.swift in Sources */,
+				54B4E8CDB82B1B3400CB871F /* PlaybackTelemetry.swift in Sources */,
+				C287A701A235DA586CDF8F4E /* RingBuffer.swift in Sources */,
+				4AC67317FB56B61705A2F60B /* StreamingLoader.swift in Sources */,
+				D0338DD7E52C7AEF2C91CFE2 /* UVInterleave.c in Sources */,
+				65A18B2E9B63183ED7122657 /* VTFrame.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		87FBDA020E19125D050AA675 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 38C424495A494F67BE7D53B9 /* FTPlayer */;
+			targetProxy = A2828B4714876F70C9DC70A2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D092B6F324D3F448F63D106 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/FFmpeg\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lc++",
+					"-lz",
+					"-lbz2",
+					"-liconv",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xfrontend",
+					"-alias-module-names-in-module-interface",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.sdk;
+				PRODUCT_NAME = FTPlayer;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		3857372A58BAB9C5A3EF1D47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5BCB678F85761651977376AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/FFmpeg\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lc++",
+					"-lz",
+					"-lbz2",
+					"-liconv",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xfrontend",
+					"-alias-module-names-in-module-interface",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.sdk;
+				PRODUCT_NAME = FTPlayer;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		71F5781F36BBA6D5DA846C5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/FFmpeg\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.sdk.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		CD3356E60516FFE7F3840FE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/FFmpeg\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.sdk.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+		E968CA69FD66E83FE362C234 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		30D5826B40D38BC9B8635A51 /* Build configuration list for PBXNativeTarget "FTPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D092B6F324D3F448F63D106 /* Debug */,
+				5BCB678F85761651977376AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		59D77032FEE0A1A494F5F27A /* Build configuration list for PBXProject "FTPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E968CA69FD66E83FE362C234 /* Debug */,
+				3857372A58BAB9C5A3EF1D47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B1AB4ABB3F7F84DF40D5C71B /* Build configuration list for PBXNativeTarget "FTPlayerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71F5781F36BBA6D5DA846C5C /* Debug */,
+				CD3356E60516FFE7F3840FE3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C6D8000726EE835D05C9FDF5 /* Project object */;
+}

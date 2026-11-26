@@ -1,0 +1,41 @@
+# Build products and local validation captures
+/build/
+/SDK/build/
+/DerivedData/
+/Validation/
+*.xcresult/
+*.xcarchive/
+*.dSYM/
+*.log
+*.log.gz
+
+# All local media fixtures live under Demo; keep only provenance and test metadata.
+/Demo/Fixtures/**
+!/Demo/Fixtures/**/
+!/Demo/Fixtures/**/*.md
+!/Demo/Fixtures/**/*.json
+!/Demo/Fixtures/**/*.m3u8
+# Public synthetic/sample HLS keys are test data, not access credentials.
+!/Demo/Fixtures/custom-iv/key
+!/Demo/Fixtures/hls-aes128/key.bin
+
+# Xcode / macOS per-user state
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+.DS_Store
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local demo credentials and signing material
+/Demo/Local/
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision

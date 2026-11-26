@@ -1,0 +1,15 @@
+--- a/libavformat/hls.c
++++ b/libavformat/hls.c
+@@ -2756,8 +2756,10 @@
+                     }
+ 
+                     tb = get_timebase(pls);
+-                    ts_diff = av_rescale_rnd(pls->pkt->dts, AV_TIME_BASE,
+-                                            tb.den, AV_ROUND_DOWN) -
++                    /* Match first_timestamp/segment-origin rounding. Rounding
++                     * negative DTS down here can put the first IDR one microsecond
++                     * before its own segment start and discard the entire GOP. */
++                    ts_diff = av_rescale_q(pls->pkt->dts, tb, AV_TIME_BASE_Q) -
+                             pls->seek_timestamp;
+                     if (ts_diff >= 0 && (pls->seek_flags  & AVSEEK_FLAG_ANY ||
+                                         pls->pkt->flags & AV_PKT_FLAG_KEY)) {

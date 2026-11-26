@@ -1,0 +1,169 @@
+name: FTPlayer
+fileGroups:
+  - FTPlayerTests
+  - Scripts
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "13.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEBUG_INFORMATION_FORMAT: dwarf
+    IPHONEOS_DEPLOYMENT_TARGET: "13.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    ARCHS: arm64
+    CODE_SIGN_STYLE: Automatic
+targets:
+  FTPlayer:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ftplayer.sdk
+        PRODUCT_NAME: FTPlayer
+        DEFINES_MODULE: YES
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        OTHER_SWIFT_FLAGS: ["$(inherited)", "-Xfrontend", "-alias-module-names-in-module-interface"]
+        SKIP_INSTALL: NO
+        GENERATE_INFOPLIST_FILE: YES
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        OTHER_LDFLAGS: ["$(inherited)", "-lc++", "-lz", "-lbz2", "-liconv"]
+    postBuildScripts:
+      - name: Create XCFramework
+        shell: /bin/bash
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - "$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)"
+          - "$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"
+        outputFiles:
+          - "$(PROJECT_DIR)/build/$(CONFIGURATION)/$(PRODUCT_NAME).xcframework"
+        script: |
+          set -euo pipefail
+
+          if [[ "${FTPLAYER_CREATE_XCFRAMEWORK:-YES}" == "NO" || "${ACTION:-}" == "indexbuild" ]]; then
+              exit 0
+          fi
+          case "${PLATFORM_NAME:-}" in
+              iphoneos|iphonesimulator) ;;
+              *) echo "Skipping XCFramework packaging for ${PLATFORM_NAME:-unknown platform}"; exit 0 ;;
+          esac
+
+          # Keep Xcode build packages separate from the verified distribution package.
+          XCFRAMEWORK_OUTPUT="${PROJECT_DIR}/build/${CONFIGURATION}/${PRODUCT_NAME}.xcframework"
+          FRAMEWORK_NAME="${FULL_PRODUCT_NAME:-${PRODUCT_NAME}.framework}"
+          IPHONEOS_FRAMEWORK="${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}"
+          SIMULATOR_FRAMEWORK="${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}"
+
+          # Archive/install builds may put the current product outside BUILD_DIR.
+          if [[ -n "${TARGET_BUILD_DIR:-}" && -d "${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}" ]]; then
+              if [[ "${PLATFORM_NAME}" == "iphoneos" ]]; then
+                  IPHONEOS_FRAMEWORK="${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}"
+              else
+                  SIMULATOR_FRAMEWORK="${TARGET_BUILD_DIR}/${FRAMEWORK_NAME}"
+              fi
+          fi
+
+          ARGS=()
+          SLICE_COUNT=0
+          for FRAMEWORK in "${IPHONEOS_FRAMEWORK}" "${SIMULATOR_FRAMEWORK}"; do
+              if [[ -d "${FRAMEWORK}" && -f "${FRAMEWORK}/${PRODUCT_NAME}" ]]; then
+                  echo "Framework: ${FRAMEWORK}"
+                  ARGS+=("-framework" "${FRAMEWORK}")
+                  SLICE_COUNT=$((SLICE_COUNT + 1))
+              else
+                  echo "warning: Framework not built yet: ${FRAMEWORK}"
+              fi
+          done
+
+          if [[ ${SLICE_COUNT} -eq 0 ]]; then
+              echo "error: No built framework found for XCFramework packaging."
+              exit 1
+          fi
+
+          mkdir -p "$(dirname "${XCFRAMEWORK_OUTPUT}")"
+          WORK_DIR="$(mktemp -d "${PROJECT_DIR}/build/.xcframework.XXXXXX")"
+          trap 'rm -rf "${WORK_DIR}"' EXIT
+          xcodebuild -create-xcframework "${ARGS[@]}" -output "${WORK_DIR}/${PRODUCT_NAME}.xcframework"
+
+          # Keep the existing package if creation fails.
+          rm -rf "${XCFRAMEWORK_OUTPUT}"
+          mv "${WORK_DIR}/${PRODUCT_NAME}.xcframework" "${XCFRAMEWORK_OUTPUT}"
+          echo "Created XCFramework (${SLICE_COUNT} platform slices): ${XCFRAMEWORK_OUTPUT}"
+    dependencies:
+      - framework: Vendor/FFmpeg/libavcodec.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavdevice.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavfilter.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavformat.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavutil.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libswresample.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libswscale.xcframework
+        embed: false
+      - sdk: UIKit.framework
+      - sdk: AVFoundation.framework
+      - sdk: AudioToolbox.framework
+      - sdk: VideoToolbox.framework
+      - sdk: CoreMedia.framework
+      - sdk: CoreVideo.framework
+      - sdk: Metal.framework
+      - sdk: QuartzCore.framework
+      - sdk: Accelerate.framework
+      - sdk: Security.framework
+      - sdk: SystemConfiguration.framework
+  FTPlayerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: FTPlayerTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ftplayer.sdk.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: ""
+        BUNDLE_LOADER: ""
+    dependencies:
+      - target: FTPlayer
+        embed: true
+      - framework: Vendor/FFmpeg/libavcodec.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavdevice.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavfilter.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavformat.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libavutil.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libswresample.xcframework
+        embed: false
+      - framework: Vendor/FFmpeg/libswscale.xcframework
+        embed: false
+schemes:
+  FTPlayer:
+    build:
+      targets:
+        FTPlayer: all
+    archive:
+      config: Release
+    test:
+      config: Debug
+      targets:
+        - FTPlayerTests
+  FTPlayerUnit:
+    build:
+      targets:
+        FTPlayer: all
+    test:
+      config: Debug
+      targets:
+        - FTPlayerTests
