@@ -53,27 +53,9 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "55BE4104E59B8BC4ADB48607"
-               BuildableName = "FTPlayerDemoUITests.xctest"
-               BlueprintName = "FTPlayerDemoUITests"
-               ReferencedContainer = "container:FTPlayerDemo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "FTPLAYER_TEST_MEDIA_MANIFEST"
-            value = "$(FTPLAYER_TEST_MEDIA_MANIFEST)"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

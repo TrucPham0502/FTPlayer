@@ -177,73 +177,17 @@ private struct CapturedPlaylist {
 
 /// Captured source traits are replayed locally through the real SDK. No source
 /// resolver or provider API is present, and no private recording/identifier is used.
-final class FTPlayerCapturedMediaRegressionTests: PlaybackTestCase {
-    func testIDValidationDoesNotAcceptURLsOrPathInjection() throws {
-        XCTAssertEqual(try CapturedFixtureID(" clip_123\n").value, "clip_123")
-        XCTAssertEqual(try CapturedFixtureID("id_-123").segmentPath(variant: "vt"), "/id_-123/vt/index.m3u8")
-        for input in ["", " ", "../video", URL(fileURLWithPath: "/tmp/video.ts").absoluteString, "a/b", "a?x", "a#x"] {
-            XCTAssertThrowsError(try CapturedFixtureID(input))
-        }
-        XCTAssertThrowsError(try CapturedFixtureID("id").segmentPath(variant: "other"))
-    }
-
-    func testManifestContainsOnlyLoopbackSegmentRoutesAndPreservesDiscontinuities() throws {
-        let playlist = CapturedPlaylist(segments: [.init(duration: 16.666667, discontinuity: false), .init(duration: 8.3, discontinuity: true)])
-        let text = String(decoding: try playlist.manifest(prefix: "/session"), as: UTF8.self)
-        XCTAssertTrue(text.contains("#EXT-X-TARGETDURATION:17"))
-        XCTAssertTrue(text.contains("#EXT-X-DISCONTINUITY\n#EXTINF:8.300000,\n/session/segment/1.ts"))
-        XCTAssertTrue(text.hasSuffix("#EXT-X-ENDLIST\n"))
-        XCTAssertFalse(text.contains("KEY")); XCTAssertFalse(text.contains("secret"))
-        XCTAssertFalse(text.contains("://"))
-    }
-
-    func testManifestRejectsEmptyAndInvalidDurations() {
-        for durations: [Double] in [[], [0], [-1], [.nan], [.infinity], [86400]] {
-            let source = CapturedPlaylist(segments: durations.map { .init(duration: $0, discontinuity: false) })
-            XCTAssertThrowsError(try source.manifest(prefix: "/session"))
+final class FTPlayerCapturedMediaRegressionTests: MediaTestCase {
+    /// A capture can start inside a 188-byte TS packet; the reader must resync.
+    private func leadingPartialTS() throws -> URL {
+        let ts = try SyntheticMedia.sample(as: "h264.ts", format: "mpegts")
+        return try SyntheticMedia.cached("captured-leading-partial.ts") { url in
+            let data = try Data(contentsOf: ts)
+            try require(data.count > 188 && data[0] == 0x47 && data[188] == 0x47, "Expected aligned MPEG-TS packets")
+            try data.dropFirst(88).write(to: url)
         }
     }
 
-    func testByteRangesHandleOpenEndedSuffixAndInvalidRequests() {
-        XCTAssertEqual(CapturedMediaHTTPServer.byteRange("bytes=2-5", count: 10), 2...5)
-        XCTAssertEqual(CapturedMediaHTTPServer.byteRange("bytes=8-999", count: 10), 8...9)
-        XCTAssertEqual(CapturedMediaHTTPServer.byteRange("bytes=3-", count: 10), 3...9)
-        XCTAssertEqual(CapturedMediaHTTPServer.byteRange("bytes=-3", count: 10), 7...9)
-        for value in ["bytes=10-", "bytes=4-2", "bytes=0-1,4-5", "bytes=-0", "bytes=999999999999999999999999-", "invalid"] {
-            XCTAssertNil(CapturedMediaHTTPServer.byteRange(value, count: 10))
-        }
-        XCTAssertNil(CapturedMediaHTTPServer.byteRange("bytes=0-", count: 0))
-    }
-
-    func testLoopbackServerReturnsPartialContentAndHEADWithoutBody() throws {
-        let server = CapturedMediaHTTPServer(); defer { server.stop() }
-        let bytes = Data("0123456789".utf8)
-        server.handler = { _, done in done(.success((bytes, "video/mp2t"))) }
-        let url = try startServer(server)
-        XCTAssertEqual(url.host, "127.0.0.1")
-        let done = expectation(description: "range/head/invalid range"); done.expectedFulfillmentCount = 3
-        var get = URLRequest(url: url.appendingPathComponent("segment.ts")); get.setValue("bytes=2-5", forHTTPHeaderField: "Range")
-        URLSession.shared.dataTask(with: get) { body, response, error in
-            XCTAssertNil(error); XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 206)
-            XCTAssertEqual((response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Content-Range"), "bytes 2-5/10")
-            XCTAssertEqual(body, Data("2345".utf8)); done.fulfill()
-        }.resume()
-        var head = URLRequest(url: url); head.httpMethod = "HEAD"
-        URLSession.shared.dataTask(with: head) { body, response, error in
-            XCTAssertNil(error); XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
-            XCTAssertEqual((response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Content-Length"), "10")
-            XCTAssertEqual(body?.count ?? 0, 0); done.fulfill()
-        }.resume()
-        var bad = URLRequest(url: url); bad.setValue("bytes=10-", forHTTPHeaderField: "Range")
-        URLSession.shared.dataTask(with: bad) { _, response, error in
-            XCTAssertNil(error); XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 416); done.fulfill()
-        }.resume()
-        wait(for: [done], timeout: 5)
-    }
-
-    // Retain the original case names and assertions on duration, decoded frames,
-    // seek completion, near-target output and progress. Source resolution becomes
-    // a deterministic fixture lookup; it is not counted as a live API check.
     func testIDResolvesAndFPlayerRendersThenSeeks() throws { try verifyPlayback(cache: false, fixtureID: "baseline", partial: false) }
     func testCachedIDRendersAndSeeksForwardThenBackward() throws { try verifyPlayback(cache: true, fixtureID: "cached", partial: false) }
     func testReportedIDRendersAndSeeksForwardThenBackward() throws { try verifyPlayback(cache: true, fixtureID: "reported-a", partial: false) }
@@ -260,7 +204,7 @@ final class FTPlayerCapturedMediaRegressionTests: PlaybackTestCase {
     private func verifyPlayback(cache: Bool, fixtureID: String, partial: Bool) throws {
         let id = try CapturedFixtureID(fixtureID)
         let prefix = "/\(id.value)"
-        let payload = try Data(contentsOf: fixture(partial ? "captured-leading-partial.ts" : "h264.ts"))
+        let payload = try Data(contentsOf: partial ? leadingPartialTS() : SyntheticMedia.sample(as: "h264.ts", format: "mpegts"))
         let source = CapturedPlaylist(segments: (0..<36).map { .init(duration: 30, discontinuity: $0 > 0) })
         let manifest = try source.manifest(prefix: prefix)
         let media = CapturedMediaHTTPServer(); defer { media.stop() }

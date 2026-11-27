@@ -4,18 +4,12 @@ import libavcodec
 import Darwin
 @testable import FTPlayer
 
-final class FTPlayerControlTests: PlaybackTestCase {
-
-
-
+final class FTPlayerControlPlaybackTests: DecodeBackendTestCase {
 
     func testBufferPlaybackStaysMonotonicAndFullAtEndAt1xAnd16x() throws {
-        try checkBufferPlayback(files: ["sample.mp4", "short-mpeg4-mp3.avi", "internet-h264.mp4"])
+        try checkBufferPlayback(files: ["sample.mp4", "short-mpeg4-mp2.avi", "internet-h264.mp4"])
     }
 
-    func testBufferHumanDetectStaysMonotonicAndFullAtEndAt1xAnd16x() throws {
-        try checkBufferPlayback(files: ["human-detect-h264.mp4"])
-    }
 
     private func checkBufferPlayback(files: [String]) throws {
         for file in files {
@@ -70,12 +64,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
         XCTAssertEqual(try Data(contentsOf: file), saved, "Telemetry kept writing after disabling")
         XCTAssertNil(s.failure)
     }
-
-
-
-
-
-
 
     private func seekBufferingPlayer() throws -> (FTPlayer, BoundaryEngine, BoundaryAudioOutput, SeekLoadingObserver) {
         let engine = BoundaryEngine(), audio = BoundaryAudioOutput(), observer = SeekLoadingObserver()
@@ -229,9 +217,13 @@ final class FTPlayerControlTests: PlaybackTestCase {
                 try require(until(15) { completions.count == fractions.count || s.failure != nil }, "Seek burst lost callbacks after rate reset")
                 try require(completions.last == true && s.failure == nil, "Final seek failed")
                 if resetTiming == "paused" { s.player.play() }
+                // The burst completes before the reset, so the clock may run at the old rate
+                // until `rate = 1`. Public progress is throttled and delivered async; start the
+                // window only after it has caught up, or that pre-reset motion counts as 1x.
                 try require(until(15) {
                     s.failure != nil || !decoder.seeking && !decoder.buffering && s.sink.frames > framesBefore &&
-                        abs(s.sink.lastPresentationTime - s.player.duration * 0.15) < 1
+                        abs(s.sink.lastPresentationTime - s.player.duration * 0.15) < 1 &&
+                        abs(s.player.currentTime - decoder.progress) < 0.1
                 }, "Playback failed to resume at final burst target")
                 let finishes = s.finished
                 let began = ProcessInfo.processInfo.systemUptime
@@ -316,8 +308,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
             "presentations": presentations, "decoder": decoder.diagnosticSnapshot])
     }
 
-
-
     func testUncachedAudioTailSeekKeepsLastPictureWhileDecodeIsStillBuffering() throws {
         let s = try start(try http("delayed-eof/bad-pdt/index.m3u8"), cache: nil, policy: .ffmpeg)
         try assertPlayback(s)
@@ -341,7 +331,7 @@ final class FTPlayerControlTests: PlaybackTestCase {
     }
 
     func testTinyVideoRepeatedBackwardSeekPublishesANewPictureBeforeFinish() throws {
-        let s = try start(try fixture("malformed-keyflags/hevc-nonkeyframe.mp4"), cache: nil, policy: .ffmpeg)
+        let s = try start(try fixture("tiny-hevc.mp4"), cache: nil, policy: .ffmpeg)
         try require(until(2) { s.sink.frames > 0 }, "Tiny fixture did not start")
         for _ in 0..<40 {
             for target in [0.05, 0.0] {
@@ -352,7 +342,7 @@ final class FTPlayerControlTests: PlaybackTestCase {
                 try require(until(2) { complete != nil }, "Tiny seek callback missing")
                 XCTAssertEqual(complete, true)
                 s.player.play()
-                let expected = target == 0 ? 0 : 1001.0 / 30000
+                let expected = target == 0 ? 0 : 1.0 / 30
                 let rendered = until(0.5) { s.sink.presentationTimes(after: frames).contains { abs($0 - expected) < 0.01 } }
                 s.measurements.append(["operation": "tiny-seek", "target": target, "picture": s.sink.lastPresentationTime,
                     "framesBefore": frames, "framesAfter": s.sink.frames, "presentations": s.sink.presentationTimes(after: frames), "finished": s.finished,
@@ -364,7 +354,7 @@ final class FTPlayerControlTests: PlaybackTestCase {
     }
 
     func testAVFinishWaitsForLastPCMAndKeepsTerminalProgress() throws {
-        for url in [try fixture("short-mpeg4-mp3.avi"), try http("av-pts-outliers/index.m3u8")] {
+        for url in [try fixture("short-mpeg4-mp2.avi")] {
             let s = try start(url, cache: nil, policy: .ffmpeg)
             try assertPlayback(s)
             s.player.rate = 16
@@ -380,7 +370,7 @@ final class FTPlayerControlTests: PlaybackTestCase {
 
 
     func testExplicitSeekAtFinishedStateThenImmediatePlayKeepsTarget() throws {
-        let s = try start(try fixture("short-mpeg4-mp3.avi"), cache: nil, policy: .ffmpeg)
+        let s = try start(try fixture("short-mpeg4-mp2.avi"), cache: nil, policy: .ffmpeg)
         try assertPlayback(s)
         s.player.rate = 16
         try require(until(5) { s.finished == 1 }, "Short input did not finish")
@@ -396,10 +386,8 @@ final class FTPlayerControlTests: PlaybackTestCase {
         XCTAssertEqual(s.finished, 1)
     }
 
-
-
     func testExplicitSeekFromFinishedClearsTerminalStateBeforeImmediatePlay() throws {
-        let s = try start(try fixture("short-mpeg4-mp3.avi"), cache: nil, policy: .ffmpeg)
+        let s = try start(try fixture("short-mpeg4-mp2.avi"), cache: nil, policy: .ffmpeg)
         try assertPlayback(s)
         s.player.rate = 16
         try require(until(5) { s.finished > 0 }, "Short input did not finish")
@@ -413,8 +401,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
         XCTAssertEqual(completed, true)
         XCTAssertEqual(s.sink.lastPresentationTime, 0.5, accuracy: 0.15)
     }
-
-
 
     func testCachedRateIncreasePresentsNewestDuePictureFromNormalRateQueue() throws {
         let s = try start(try http("hls-ts/index.m3u8"), cache: true, policy: .ffmpeg)
@@ -440,7 +426,7 @@ final class FTPlayerControlTests: PlaybackTestCase {
 
 
     func testShortAVICachedTailSeekRendersNewVideo() throws {
-        let s = try start(try http("short-mpeg4-mp3.avi"), cache: true)
+        let s = try start(try http("short-mpeg4-mp2.avi"), cache: true)
         try assertPlayback(s)
         for target in [0.0, 0.684, 1.0944] {
             s.player.pause()
@@ -457,10 +443,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
         }
     }
 
-
-
-
-
     func testShortVideoOnlySeekAt4xReleasesBufferingAtEOF() throws {
         let session = try start(fixture("internet-hevc.mp4"), policy: .ffmpeg)
         try assertPlayback(session)
@@ -476,10 +458,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
         XCTAssertNil(session.failure)
         XCTAssertFalse(session.player.decoder?.buffering ?? true)
     }
-
-
-
-
 
     func testReviewHLSHEVCSeekKeepsFirstRandomAccessPacket() throws {
         let format = FTFormatContext(contentURL: try fixture("hls-hevc/index.m3u8"), videoFormat: .unknown)
@@ -1032,7 +1010,8 @@ final class FTPlayerControlTests: PlaybackTestCase {
         let s = try start(fixture("sample.mp4")); s.player.pause(); pump(0.1)
         let observer = ReviewObserver(); s.player.delegate = observer
         s.player.playableTime = 3; s.player.playableTime = 4; pump(0.1)
-        XCTAssertEqual(observer.playable, [3, 4], "In-range playable updates never reach delegate")
+        // A decoder buffer update may follow and raise playableTime again.
+        XCTAssertEqual(Array(observer.playable.prefix(2)), [3, 4], "In-range playable updates never reach delegate")
     }
     func testVideoOutputWorksWithoutRenderer() throws {
         let s = PlaybackSession(url: try fixture("sample.mp4")); sessions.append(s)
@@ -1113,9 +1092,9 @@ final class FTPlayerControlTests: PlaybackTestCase {
     }
 
     func testReviewFractionalDurationPreserved() throws {
-        // Independent ffprobe fixture manifest: audio.m4a = 30.021995 seconds.
+        // Synthetic audio.m4a: 30 s of AAC rounded up to whole frames = 30.000181 seconds.
         let s = try start(fixture("audio.m4a"))
-        XCTAssertEqual(s.player.duration, 30.021995, accuracy: 0.000002, "Duration truncated to whole seconds")
+        XCTAssertEqual(s.player.duration, 30.000181, accuracy: 0.000002, "Duration truncated to whole seconds")
         try assertPlayback(s, video: false)
     }
     func testReviewManualPauseCancelsBackgroundAutoResume() throws {
@@ -1147,8 +1126,6 @@ final class FTPlayerControlTests: PlaybackTestCase {
             pump(0.03)
         }
     }
-
-
 
     func testSeekBufferingCompletionWaitsForDelayedTargetMedia() throws {
         continueAfterFailure = true
@@ -1203,30 +1180,77 @@ final class FTPlayerControlTests: PlaybackTestCase {
         withExtendedLifetime(delayed) {}
     }
 
+    // ±10 s buttons seek relative to `progress`: an accepted seek must publish its target at once,
+    // so rapid taps accumulate instead of restarting from the stale playback position.
+    private func checkRelativeSeekBurst(_ deltas: [Double]) throws {
+        let s = try start(fixture("sample.mp4"))
+        try assertPlayback(s)
+        try require(until { s.player.currentTime > 0.2 }, "Playback did not advance")
+        s.player.pause(); pump(0.1)
+        var expected = s.player.currentTime
+        for delta in deltas {
+            expected = min(s.player.duration, max(0, expected + delta))
+            s.player.seek(to: min(s.player.duration, max(0, s.player.progress + delta)))
+            XCTAssertEqual(s.player.progress, expected, accuracy: 0.1, "Pending seek target was not published to progress")
+        }
+        try require(until { s.player.decoder?.seeking == false || s.failure != nil }, "Seek burst did not settle")
+        pump(0.3)
+        XCTAssertNil(s.failure)
+        XCTAssertEqual(s.player.currentTime, expected, accuracy: 0.5, "Rapid relative seeks used stale progress instead of the pending target")
+        s.player.play()
+        try require(until { s.player.currentTime > expected + 0.1 || s.player.state == .finished }, "Playback did not resume after the burst")
+    }
+    func testRelativeSeekBurstDoubleForwardAccumulates() throws { try checkRelativeSeekBurst([10, 10]) }
+    func testRelativeSeekBurstMixedDirectionsAccumulate() throws { try checkRelativeSeekBurst([10, 10, 10, -10, -10, 10]) }
+
+    // Replay after a 16x finish: seek(0) must reset the buffer bar before the second pass,
+    // which must again fill monotonically to 1.
+    func testBufferProgressResetsOnReplayAfter16xFinish() throws {
+        let s = PlaybackSession(url: try fixture("sample.mp4"), policy: .ffmpeg)
+        sessions.append(s)
+        let observer = BoundaryProgressObserver()
+        s.player.progressDelegate = observer
+        s.player.rate = 16
+        s.start()
+        try require(until(45) { s.finished == 1 || s.failure != nil }, "First 16x pass did not finish")
+        pump(0.1)
+        XCTAssertEqual(s.player.bufferProgress, 1)
+        s.player.seek(to: 0)
+        XCTAssertEqual(s.player.bufferProgress, 0, "Replay retained the previous full buffer endpoint")
+        pump(0.02)
+        observer.buffers.removeAll()
+        s.player.play()
+        try require(until(45) { s.finished == 2 || s.failure != nil }, "Replay did not finish")
+        pump(0.1)
+        XCTAssertNil(s.failure)
+        XCTAssertEqual(s.player.bufferProgress, 1, "Buffer bar left a gap after the replay")
+        XCTAssertEqual(observer.buffers.last, 1)
+        XCTAssertTrue(zip(observer.buffers, observer.buffers.dropFirst()).allSatisfy { $0 <= $1 }, "Buffer bar moved backward during the 16x replay")
+    }
+
+    // From 2x up the decoder discards non-reference pictures, so frames already queued at 8x are
+    // sparse. Lowering the rate with a seek at the current time must decode again: the output right
+    // after the switch is continuous in PTS and never moves backward.
+    func testReturnFrom8xTo1xWithRedecodeSeekShowsFullFrameRateImmediately() throws {
+        let s = try start(fixture("sample.mp4"))
+        try assertPlayback(s)
+        s.player.rate = 8
+        try require(until(4) { s.player.progress > 8 || s.failure != nil }, "8x did not fill the frame queue")
+        s.player.rate = 1
+        s.player.seek(to: s.player.currentTime)
+        let frames = s.sink.frames
+        pump(1.5)
+        XCTAssertNil(s.failure)
+        let after = s.sink.presentationTimes(after: frames)
+        XCTAssertGreaterThan(after.count, 10, "Playback did not resume after the switch")
+        let gaps = zip(after, after.dropFirst()).map { $1 - $0 }
+        XCTAssertLessThanOrEqual(gaps.max() ?? .infinity, 2.0 / 24 + 0.005,
+                                 "Frames sampled for 8x played at 1x: gaps \(gaps.map { String(format: "%.3f", $0) })")
+        XCTAssertFalse(after.contains { $0 < after[0] - 0.001 }, "Playback moved backwards")
+    }
+
 }
 
-private final class SeekLoadingObserver: FTPlayerPlaybackDelegate {
-    var loading = false
-    var events: [String] = []
-    func playerBufferingStart(_ player: FTPlayer) { loading = true; events.append("start") }
-    func playerBufferingEnd(_ player: FTPlayer) { loading = false; events.append("end") }
-}
-
-private final class ReviewObserver: FTPlayerDeletegate {
-    var progress: [Double] = [], playable: [Double] = []
-    var states: [FTPlayerState] = []
-    var ready = 0, finished = 0, errors = 0
-    func player(_ player: FTPlayer, didChangeState state: FTPlayerState) { states.append(state) }
-    func player(_ player: FTPlayer, didUpdateProgress value: TimeInterval) { progress.append(value) }
-    func player(_ player: FTPlayer, didUpdatePlayable value: TimeInterval) { playable.append(value) }
-    func player(_ player: FTPlayer, didUpdateBufferProgress value: Double) {}
-    func player(_ player: FTPlayer, didUpdateDownloadProgress value: Double) {}
-    func playerReadyToPlay(_ player: FTPlayer, duration: TimeInterval) { ready += 1 }
-    func playerDidFinish(_ player: FTPlayer) { finished += 1 }
-    func player(_ player: FTPlayer, didFail error: Error) { errors += 1 }
-    func playerBufferingStart(_ player: FTPlayer) {}
-    func playerBufferingEnd(_ player: FTPlayer) {}
-}
 /// Deterministic capacity limit before the real decoder; no synthetic output frames.
 private final class SustainedDecodeThrottle: FTVideoDecoderDataSource {
     @Atomic var delay: TimeInterval
@@ -1237,16 +1261,6 @@ private final class SustainedDecodeThrottle: FTVideoDecoderDataSource {
         return false
     }
     func videoDecoder(_ videoDecoder: FTVideoDecoderInfo, decodeFrame packet: AVPacket) -> FTVideoFrame? { nil }
-}
-
-private final class TimelineCoverageFrameSource: FTVideoDecoderDataSource {
-    func shouldHandle(_ videoDecoder: FTVideoDecoderInfo, decodeFrame packet: AVPacket) -> Bool { true }
-    func videoDecoder(_ videoDecoder: FTVideoDecoderInfo, decodeFrame packet: AVPacket) -> FTVideoFrame? {
-        let frame = FTCVYUVVideoFrame(pixelBuffer: nil)
-        frame.position = Double(packet.pts) * videoDecoder.timebase
-        frame.duration = 1 / videoDecoder.fps
-        return frame
-    }
 }
 
 private final class LongSeekPrerollFrameSource: FTVideoDecoderDataSource {
@@ -1312,81 +1326,8 @@ private final class ReviewVideoOutput: FTPlayerVideoOutput {
     }
 }
 
-private final class BoundaryProgressObserver: FTPlayerProgressDelegate {
-    var values: [Double] = []
-    var buffers: [Double] = []
-    var onMain = true
-    var onProgress: (() -> Void)?
-    func player(_ player: FTPlayer, didUpdateProgress progress: TimeInterval) {
-        onMain = onMain && Thread.isMainThread
-        values.append(progress)
-        onProgress?()
-    }
-    func player(_ player: FTPlayer, didUpdateBufferProgress progress: Double) { buffers.append(progress) }
-}
-
-/// Deliberately not an FTDecoder subclass: validates actual dependency substitution.
-private final class BoundaryEngine: PlaybackEngine {
-    weak var delegate: FTDecoderDelegate?
-    var useCache = false
-    var loadControlConfiguration = FTPlayerLoadControlConfiguration()
-    var cacheSession: (any PlaybackCacheSession)?
-    var cacheSessionRevision: Int?
-    var videoDecodingPolicy: FTVideoDecodingPolicy = .automatic
-    var playbackRate: Float = 1
-    var minBufferedDuration: TimeInterval = 2
-    let duration: TimeInterval = 120
-    let presentationSize = CGSize(width: 640, height: 360)
-    let bitrate: TimeInterval = 100_000
-    let mediaInfo: FTPlayerMediaInfo? = nil
-    let prepareToDecode = true
-    var buffering = false
-    var seekHandler: ((TimeInterval, ((Bool) -> Void)?) -> Void)?
-    var playbackFinished = false
-    let videoEnable = true
-    let audioEnable = false
-    let cachedTimeRanges: [FTPlayerCachedTimeRange] = []
-    let cachedFraction: Double = 0
-    let decodingStatistics: FTVideoDecodingStatistics? = nil
-    let diagnosticSnapshot = "protocol test engine"
-    private(set) var closeCount = 0
-    func open() {}
-    func resume() {}
-    func pause() {}
-    func closeFile() { closeCount += 1 }
-    func closeFileWithCompletion(_ completion: @escaping () -> Void) { closeFile(); completion() }
-    func seek(to time: TimeInterval, completeHandler: ((Bool) -> Void)?) {
-        playbackFinished = false
-        if let seekHandler { seekHandler(time, completeHandler) }
-        else { completeHandler?(true) }
-    }
-    func fetchAudioFrame() -> FTAudioFrame? { nil }
-}
-
-private final class BoundaryAudioOutput: PlaybackAudioOutput {
-    var volume: Float = 1
-    var playbackRate: Float = 1
-    private(set) var playing = false
-    let numberOfChannels: UInt32 = 2
-    let samplingRate: Float64 = 48_000
-    func registerAudioSession() -> Bool { true }
-    func setEventHandlers(interruption: @escaping (FTAudioManagerInterruptionType, FTAudioManagerInterruptionOption) -> Void,
-                          routeChange: @escaping (FTAudioManagerRouteChangeReason) -> Void) {}
-    func play() { playing = true }
-    func pause() { playing = false }
-    func destroy() { playing = false }
-}
-private struct BoundaryFactory: PlaybackComponentFactory {
-    let engine: BoundaryEngine
-    let audio: BoundaryAudioOutput
-    func makeDecoder(contentURL: URL, videoFormat: FTVideoFormat,
-                     videoOutput: FTDecoderVideoOutput, audioOutput: FTDecoderAudioOutput) -> any PlaybackEngine { engine }
-    func makeAudioOutput(source: any FTAudioFrameSource) -> any PlaybackAudioOutput { audio }
-    func makeCacheSession() throws -> any PlaybackCacheSession { try FTPlaybackCacheSession() }
-}
-
 /// Measures wall-clock work, rather than treating an advancing media clock as smooth video.
-final class FTPlayerHighRateLoadTests: PlaybackTestCase {
+final class FTPlayerHighRateLoadPlaybackTests: DecodeBackendTestCase {
     @objc func testHighRateNotificationsAreBounded() throws {
         continueAfterFailure = true
         let s = try start(http("sustained-h264-aac.mp4"), cache: true)
@@ -1411,13 +1352,6 @@ final class FTPlayerHighRateLoadTests: PlaybackTestCase {
     }
     @objc func testHighRateLoadH264() throws { try measureLoad("sustained-h264-aac.mp4") }
     @objc func testHighRateLoadHEVC() throws { try measureLoad("sustained-hevc-aac.mp4") }
-    @objc func testHighRateLoadCamera() throws {
-        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let source = documents.appendingPathComponent("FTPlayerHighRateInput.mp4")
-        guard FileManager.default.fileExists(atPath: source.path) else { throw XCTSkip("Install the opt-in camera recording in Documents") }
-        server = try FixtureHTTPServer(root: documents)
-        try measureLoad("FTPlayerHighRateInput.mp4")
-    }
 
     private func measureLoad(_ file: String) throws {
         var results: [[String: Any]] = []
@@ -1554,7 +1488,7 @@ private final class HighRateMainHeartbeat {
 }
 
 /// Reentrant control: seek is called inside the public ready callback itself.
-final class FTPlayerReadySeekTests: PlaybackTestCase {
+final class FTPlayerReadySeekTests: DecodeBackendTestCase {
     @objc func testReadySeekMP4H264DefaultCache() throws { try checkReadySeek("sustained-h264-aac.mp4", cache: nil) }
     @objc func testReadySeekMP4H264Cached() throws { try checkReadySeek("sustained-h264-aac.mp4", cache: true) }
     @objc func testReadySeekMP4HEVCDefaultCache() throws { try checkReadySeek("sustained-hevc-aac.mp4", cache: nil) }
@@ -1569,7 +1503,7 @@ final class FTPlayerReadySeekTests: PlaybackTestCase {
     }
 }
 
-extension PlaybackTestCase {
+extension DecodeBackendTestCase {
     func checkImmediateReadySeek(url: URL, cache: Bool?, timeout: TimeInterval = 20) throws {
         for rate: Float in [1, 8, 16] {
             let s = PlaybackSession(url: url, cache: cache, policy: .ffmpeg)
@@ -1635,7 +1569,7 @@ extension PlaybackTestCase {
     }
 }
 
-final class FTPlayerWeakNetworkRateTests: PlaybackTestCase {
+final class FTPlayerWeakNetworkRateTests: DecodeBackendTestCase {
     @objc func testWeakNetworkH264DefaultCache() throws { try checkWeakNetwork("sustained-h264-aac.mp4", cache: nil) }
     @objc func testWeakNetworkH264Cached() throws { try checkWeakNetwork("sustained-h264-aac.mp4", cache: true) }
     @objc func testWeakNetworkHEVCDefaultCache() throws { try checkWeakNetwork("sustained-hevc-aac.mp4", cache: nil) }

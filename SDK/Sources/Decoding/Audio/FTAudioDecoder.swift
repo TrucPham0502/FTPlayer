@@ -293,9 +293,8 @@ class FTAudioDecoder {
         }
 
         audioFrame.position = position
-        audioFrame.duration = Double(tempFrame.pointee.duration) * timebase
-
-        if audioFrame.duration <= 0 { audioFrame.duration = Double(numberOfFrames) / samplingRate }
+        // The PCM that will play, not the container's declared packet duration.
+        audioFrame.duration = Double(numberOfFrames) / samplingRate
 
         let numberOfElements = numberOfFrames * Int(channelCount)
         audioFrame.setSamplesLength(numberOfElements * MemoryLayout<Float32>.size)

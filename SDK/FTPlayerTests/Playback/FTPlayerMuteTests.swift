@@ -4,7 +4,7 @@ import AudioToolbox
 import libavcodec
 @testable import FTPlayer
 
-final class FTPlayerMuteTests: PlaybackTestCase {
+final class FTPlayerMuteTests: MediaTestCase {
     private func tone(sampleRate: Int, amplitudes: [Double]) throws -> URL {
         var pcm = Data()
         for frame in 0..<sampleRate {
@@ -77,7 +77,7 @@ final class FTPlayerMuteTests: PlaybackTestCase {
     func testAudioLevelNearFullScaleMonoDoesNotClip() throws { try checkPCM(inputRate: 8000, outputRate: 48000, amplitudes: [0.95], outputChannels: 2) }
 
     func testLongAudioSeekPrerollDoesNotFillPacketReadBudget() throws {
-        let format = FTFormatContext(contentURL: try fixture("sustained-h264-aac.mp4"), videoFormat: .unknown)
+        let format = FTFormatContext(contentURL: try SyntheticMedia.sustained(), videoFormat: .unknown)
         defer { format.destroy() }
         format.setupSync(useCache: false)
         XCTAssertNil(format.error)
@@ -114,7 +114,7 @@ final class FTPlayerMuteTests: PlaybackTestCase {
                                "mixerGain": value, "frames": s.sink.frames, "progress": s.player.progress])
     }
     func testMutedBeforeOpenPreservesVolumeAndVideo() throws {
-        let s = PlaybackSession(url: try fixture("sample.mp4")); sessions.append(s)
+        let s = PlaybackSession(url: try SyntheticMedia.sample()); sessions.append(s)
         s.player.isMuted = true; s.player.volume = 0.35; s.start()
         try require(until { s.ready || s.failure != nil }, "Open timed out")
         try assertPlayback(s); try gain(s, 0, "muted before open")
@@ -126,7 +126,7 @@ final class FTPlayerMuteTests: PlaybackTestCase {
         try gain(s, 0.6, "invalid volumes keep mixer level")
     }
     func testMuteSurvivesRateSeekAndReopen() throws {
-        let s = try start(fixture("sample.mp4")); try assertPlayback(s)
+        let s = try start(try SyntheticMedia.sample()); try assertPlayback(s)
         s.player.volume = 0.5; s.player.isMuted = true
         s.player.rate = 2
         var done: Bool?; s.player.seek(to: 10) { done = $0 }
@@ -139,6 +139,19 @@ final class FTPlayerMuteTests: PlaybackTestCase {
         s.player.isMuted = false; try gain(s, 0.5, "unmute after reopen")
         let frames = s.sink.frames
         try require(until { s.sink.frames > frames + 3 }, "Reopened video stalled")
+    }
+    func testMuteTogglesAreTracedInExportedDiagnostics() throws {
+        let diagnostics = FTPlayerDiagnostic.shared
+        let wasEnabled = diagnostics.isEnabled
+        diagnostics.isEnabled = true
+        defer { diagnostics.isEnabled = wasEnabled }
+        let s = try start(try SyntheticMedia.sample()); try assertPlayback(s)
+        s.player.isMuted = false; s.player.isMuted = true; s.player.isMuted = false
+        let exported = try diagnostics.exportLogs(notes: "mute-trace")
+        defer { try? FileManager.default.removeItem(at: exported) }
+        let report = try String(contentsOf: exported)
+        XCTAssertTrue(report.contains("audio muted=true"), "Mute was not traced in the exported log")
+        XCTAssertTrue(report.contains("audio muted=false"), "Unmute was not traced in the exported log")
     }
 }
 
@@ -165,7 +178,7 @@ private final class PrerollAudioParameters: FTAudioDecoderDelegate {
 }
 
 // Session changes must be exercised with actual rendered PCM, not just state callbacks.
-final class FTPlayerAudioSessionTests: PlaybackTestCase {
+final class FTPlayerAudioSessionTests: MediaTestCase {
     private let session = AVAudioSession.sharedInstance()
     private var saved: (AVAudioSession.Category, AVAudioSession.Mode, AVAudioSession.CategoryOptions, Double, Double)!
 
@@ -436,10 +449,10 @@ final class FTPlayerAudioSessionTests: PlaybackTestCase {
 /// Exercises the actual AUGraph pull chain, including a TimePitch node whose
 /// processing rate is deliberately stale. Parameter readback alone cannot prove
 /// the PCM consumption rate (the iPhone report showed 1 while consuming at 3x).
-final class FTPlayerRateRecoveryTests: PlaybackTestCase {
+final class FTPlayerRateRecoveryTests: MediaTestCase {
     func testProgressContinuesWhenTimePitchStopsPullingPCMAtUnityRate() throws {
         continueAfterFailure = true
-        let s = PlaybackSession(url: try fixture("sustained-h264-aac.mp4"), cache: true)
+        let s = PlaybackSession(url: try SyntheticMedia.sustained(), cache: true)
         sessions.append(s)
         s.player.isMuted = true
         s.start()
@@ -493,7 +506,7 @@ final class FTPlayerRateRecoveryTests: PlaybackTestCase {
     func testRateOneAfterPacedHighRateSeeksAudible() throws { try checkPacedSeeks(muted: false) }
 
     private func checkPacedSeeks(muted: Bool) throws {
-        let s = PlaybackSession(url: try fixture("sustained-h264-aac.mp4"), cache: true)
+        let s = PlaybackSession(url: try SyntheticMedia.sustained(), cache: true)
         sessions.append(s)
         s.player.isMuted = muted
         s.start()
@@ -709,141 +722,4 @@ private final class AudioSessionForeignOutput {
     }
     func stop() { unit.stopHardware(); unit.deallocateRenderResources() }
     deinit { stop() }
-}
-
-/// Opt-in recording test: no private URL or media is checked into Git.
-final class FTPlayerPrivateAudioSessionTests: PlaybackTestCase {
-    @objc func testPrivateURLWithExactAudioPreferences() throws {
-        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let manifest = documents.appendingPathComponent("FTPlayerAudioPreferenceInput.json")
-        guard FileManager.default.fileExists(atPath: manifest.path) else { throw XCTSkip("Install FTPlayerAudioPreferenceInput.json with a url in app Documents") }
-        let input = try JSONSerialization.jsonObject(with: Data(contentsOf: manifest)) as? [String: Any]
-        let url = try XCTUnwrap((input?["url"] as? String).flatMap(URL.init(string:)))
-        let session = AVAudioSession.sharedInstance()
-        let saved = (session.category, session.mode, session.categoryOptions, session.preferredSampleRate, session.preferredIOBufferDuration)
-        defer {
-            try? session.setActive(false)
-            try? session.setCategory(saved.0, mode: saved.1, options: saved.2)
-            if saved.3 > 0 { try? session.setPreferredSampleRate(saved.3) }
-            if saved.4 > 0 { try? session.setPreferredIOBufferDuration(saved.4) }
-        }
-        func snapshot() -> [String: Any] {
-            ["wall": ProcessInfo.processInfo.systemUptime, "category": session.category.rawValue,
-                "mode": session.mode.rawValue, "rate": session.sampleRate, "preferredRate": session.preferredSampleRate,
-                "buffer": session.ioBufferDuration, "preferredBuffer": session.preferredIOBufferDuration]
-        }
-        try session.setCategory(.playback, mode: .moviePlayback)
-        try session.setActive(true)
-        let before = snapshot()
-        // Requested reproduction: call both lines, then play the supplied URL.
-        try session.setPreferredIOBufferDuration(0.005)
-        try session.setPreferredSampleRate(session.sampleRate)
-        let after = snapshot()
-        let factory = AudioPreferenceRecordingFactory()
-        let player = FTPlayer(contentURL: url, components: factory)
-        player.backgroundMode = .continuing; player.useCache = true
-        player.isMuted = false; player.volume = 1; player.rate = 1
-        let sink = PixelSink(); attachVideoSink(sink, to: player)
-        defer { factory.stopCapture(); player.stop() }
-        player.replaceVideo()
-        XCTAssertNil(factory.captureError)
-        try require(until(45) { player.state == .playing || player.state == .failed }, "Private URL did not start")
-        try require(player.state != .failed, "Private URL failed to open")
-        let manager = try XCTUnwrap(factory.manager), source = try XCTUnwrap(factory.source)
-        let rate = manager.samplingRate, channels = Int(manager.numberOfChannels)
-        // Capture was installed by the factory before decoder.open(). Do not
-        // seek or restart audio: include the very first playback buffers.
-        let reachedMinute = until(90) { player.currentTime >= 61 || player.state == .failed || player.state == .finished }
-        factory.stopCapture()
-        var stages: [[String: Any]] = []
-        for (index, tap) in factory.taps.enumerated() {
-            let label = ["converter", "mixer"][index]
-            let frames = try tap.exportPCM(to: documents.appendingPathComponent("FTPlayerExactPreferences-\(label).f32"))
-            stages.append(["stage": label, "frames": frames, "renderErrors": tap.errors, "overflow": tap.overflows])
-            XCTAssertGreaterThan(frames, Int(rate * 60))
-            XCTAssertEqual(tap.errors + tap.overflows, 0)
-        }
-        let report: [String: Any] = ["beforeCalls": before, "afterCalls": after, "finalSession": snapshot(),
-            "graphRate": rate, "channels": channels, "captureStart": factory.captureStart, "target": 0, "stages": stages,
-            "state": String(describing: player.state), "videoFrames": sink.frames,
-            "mixerGain": manager.volume, "unitRate": manager.playbackRate,
-            "audioFetches": source.fetches, "decoder": player.decoder?.diagnosticSnapshot ?? "none"]
-        let data = try JSONSerialization.data(withJSONObject: report, options: [.prettyPrinted, .sortedKeys])
-        try data.write(to: documents.appendingPathComponent("FTPlayerExactPreferences-report.json"))
-        let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.json")
-        attachment.name = "private-recording-exact-preferences"; attachment.lifetime = .keepAlways; add(attachment)
-        print("PRIVATE_AUDIO_PREFERENCES_RESULT \(String(decoding: data, as: UTF8.self))")
-        XCTAssertEqual(player.state, .playing)
-        XCTAssertTrue(reachedMinute)
-        XCTAssertGreaterThanOrEqual(player.currentTime, 60)
-        XCTAssertEqual(factory.taps.count, 2)
-        let audibleFrames = source.fetches.filter { ($0["bytes"] as? Int ?? 0) > 0 }
-        XCTAssertLessThanOrEqual(audibleFrames.first?["pts"] as? Double ?? .infinity, 0.13, "Capture missed the start of the source")
-        XCTAssertGreaterThanOrEqual(audibleFrames.last?["pts"] as? Double ?? -1, 60, "Capture did not cover the first minute")
-        XCTAssertGreaterThan(sink.frames, 20)
-        XCTAssertEqual(manager.volume, 1, accuracy: 0.001)
-        XCTAssertEqual(manager.playbackRate, 1, accuracy: 0.001)
-    }
-}
-
-private final class AudioPreferenceRecordingSource: FTAudioFrameSource {
-    let source: any FTAudioFrameSource
-    private var capturing = false
-    private var events: [(wall: Double, pts: Double, bytes: Int, buffering: Bool, seeking: Bool)] = []
-    var fetches: [[String: Any]] {
-        events.map { ["wall": $0.wall, "pts": $0.pts, "bytes": $0.bytes, "buffering": $0.buffering, "seeking": $0.seeking] }
-    }
-    init(_ source: any FTAudioFrameSource) { self.source = source; events.reserveCapacity(2048) }
-    func beginCapture() { capturing = true }
-    func fetchAudioFrame() -> FTAudioFrame? {
-        let frame = source.fetchAudioFrame()
-        if capturing, events.count < 2048 {
-            let decoder = source as? FTDecoder
-            events.append((ProcessInfo.processInfo.systemUptime, frame?.position ?? -1,
-                frame.map { $0.size - $0.outputOffset } ?? 0, decoder?.buffering ?? false, decoder?.seeking ?? false))
-        }
-        return frame
-    }
-}
-
-private final class AudioPreferenceRecordingFactory: PlaybackComponentFactory {
-    var manager: FTAudioManager?, source: AudioPreferenceRecordingSource?
-    private(set) var taps: [AudioSessionPCMCapture] = []
-    private var units: [AudioUnit] = []
-    private(set) var captureStart: Double = 0
-    private(set) var captureError: String?
-    func makeDecoder(contentURL: URL, videoFormat: FTVideoFormat, videoOutput: FTDecoderVideoOutput,
-        audioOutput: FTDecoderAudioOutput) -> any PlaybackEngine {
-        DefaultPlaybackComponentFactory().makeDecoder(contentURL: contentURL, videoFormat: videoFormat,
-            videoOutput: videoOutput, audioOutput: audioOutput)
-    }
-    func makeAudioOutput(source: any FTAudioFrameSource) -> any PlaybackAudioOutput {
-        let proxy = AudioPreferenceRecordingSource(source); self.source = proxy
-        let manager = FTAudioManager(decoder: proxy); self.manager = manager
-        // Registration here is idempotent with facade.setupAudio(). It gives
-        // the test access to the graph before any playback starts.
-        guard manager.registerAudioSession(),
-            let optional = Mirror(reflecting: manager).children.first(where: { $0.label == "outputContext" })?.value,
-            let context = Mirror(reflecting: optional).children.first?.value as? FTAudioOutputContext,
-            let converter = context.converterNodeContext.audioUnit, let mixer = context.mixerNodeContext.audioUnit else {
-            captureError = "Unable to install capture before audio starts"; return manager
-        }
-        units = [converter, mixer]
-        taps = units.map { _ in AudioSessionPCMCapture(channels: Int(manager.numberOfChannels), capacity: Int(manager.samplingRate * 90)) }
-        captureStart = ProcessInfo.processInfo.systemUptime
-        for (unit, tap) in zip(units, taps) {
-            let result = AudioUnitAddRenderNotify(unit, audioSessionCaptureCallback, Unmanaged.passUnretained(tap).toOpaque())
-            if result != noErr { captureError = "AudioUnitAddRenderNotify failed: \(result)" }
-        }
-        proxy.beginCapture()
-        return manager
-    }
-    func stopCapture() {
-        manager?.pause()
-        for (unit, tap) in zip(units, taps) {
-            AudioUnitRemoveRenderNotify(unit, audioSessionCaptureCallback, Unmanaged.passUnretained(tap).toOpaque())
-        }
-        units.removeAll()
-    }
-    func makeCacheSession() throws -> any PlaybackCacheSession { try FTPlaybackCacheSession() }
 }

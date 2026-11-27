@@ -30,6 +30,7 @@ class FTFrameQueue: NSObject {
     private var frames: [FTFrame] = []
     private var condition = NSCondition()
     private var destroyToken = false
+    private var removals = 0
 
     static func frameQueue() -> FTFrameQueue {
         return FTFrameQueue()
@@ -103,6 +104,8 @@ class FTFrameQueue: NSObject {
         if size <= 0 || count <= 0 {
             size = 0
         }
+        removals += 1
+        condition.broadcast()
         condition.unlock()
         return frame
     }
@@ -129,8 +132,19 @@ class FTFrameQueue: NSObject {
         if size <= 0 || count <= 0 {
             size = 0
         }
+        removals += 1
+        condition.broadcast()
         condition.unlock()
         return frame
+    }
+
+    /// Blocks a producer until a frame is removed, the queue is flushed or
+    /// destroyed, or `timeout` elapses.
+    func waitForRemoval(timeout: TimeInterval) {
+        condition.lock()
+        defer { condition.unlock() }
+        let observed = removals, deadline = Date(timeIntervalSinceNow: timeout)
+        while removals == observed && !destroyToken && condition.wait(until: deadline) {}
     }
 
     func flush() {
@@ -139,6 +153,8 @@ class FTFrameQueue: NSObject {
         frames.removeAll()
         _duration = 0
         size = 0
+        removals += 1
+        condition.broadcast()
         condition.unlock()
     }
 

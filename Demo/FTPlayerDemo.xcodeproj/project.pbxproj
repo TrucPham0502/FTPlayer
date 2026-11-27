@@ -8,43 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		126767D959B5F37CA8756405 /* SampleStreams.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BD330B88DA53A2F39D9B008 /* SampleStreams.json */; };
-		19CBCC8596B575DF10EB75C8 /* FixtureHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59EBC3D19FA43FE07E141B48 /* FixtureHTTPServer.swift */; };
-		21DAA9035DF65C7AA5634687 /* FTPlayerDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EE69DF995C09F8373E1448 /* FTPlayerDemoTests.swift */; };
-		26B91DA3B4E47F3893AD9229 /* MediaFixtureCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 06CCD68685F63FB3566580BF /* MediaFixtureCatalog.json */; };
 		3E7C5821B04F556505627049 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA9BED6FCF0E307C9A14B3 /* AppDelegate.swift */; };
-		4072E0D69F9F9E72FFD1B769 /* FTPlayerCapturedMediaRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174F53454D3CDFBE84EA3015 /* FTPlayerCapturedMediaRegressionTests.swift */; };
-		42732252053240099DD22853 /* FTPlayerControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F30904FD46C6D71F7FD8A5C /* FTPlayerControlTests.swift */; };
-		4760E044C7D75AD71A732081 /* SampleStreams.json in Resources */ = {isa = PBXBuildFile; fileRef = 575095B9E96C76CD71716577 /* SampleStreams.json */; };
-		5406C3D784261F0036A13708 /* FTPlayerHLSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D08A147A72389737F39D739 /* FTPlayerHLSTests.swift */; };
-		6E3F31547021E72D222FA8C2 /* FTPlayerFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DED10107BF8D157C5D9239B /* FTPlayerFormatTests.swift */; };
-		6F664871234FEC9A3B571B41 /* FTPlayerSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD045B74DA21B2E807828CE /* FTPlayerSmokeTests.swift */; };
-		716D0F88BC5CE935CC842E81 /* RemoteFixtureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF233E0A27678873D9B96EB6 /* RemoteFixtureStore.swift */; };
 		74F8DFC37D1F41F75BE85BFB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56AC2340164ED200E583A8D /* ViewController.swift */; };
-		99E4D0AD667C987D970BA8A0 /* FTPlayerDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3CF6970E35D736BBE77E80 /* FTPlayerDemoUITests.swift */; };
 		A105FF7757A0F3167BF7D217 /* AOVSmartRateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53060A1806026577DE24869B /* AOVSmartRateController.swift */; };
-		A7D23DF0AACF85E08EAEB22B /* FTPlayerDecodeBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC647B7AC376D8291C7EACF /* FTPlayerDecodeBackendTests.swift */; };
-		B47228F2A27E67BDC6216081 /* PlaybackTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4F049E579AEDC4159AB250 /* PlaybackTestSupport.swift */; };
-		B5CFA8E9F2074972D88139E2 /* FTPlayerMuteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931375B02AD1354E8ACC852C /* FTPlayerMuteTests.swift */; };
 		BAF8EB3DFD687FFFB90DAEA6 /* FTPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A255FAF1A848B60B5EBF3B17 /* FTPlayer.framework */; };
-		C0B8E8B2958FFF2814D74F80 /* SampleStreams.json in Resources */ = {isa = PBXBuildFile; fileRef = 575095B9E96C76CD71716577 /* SampleStreams.json */; };
-		C503634AF600A931D2519B6C /* FTPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A255FAF1A848B60B5EBF3B17 /* FTPlayer.framework */; };
-		C56694D7CACABB471EA1B5F5 /* FTPlayerDecodeBackendInternetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1024EAA3393416AC704617D /* FTPlayerDecodeBackendInternetTests.swift */; };
-		D233AAE9FC5F036606279B1F /* FTPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A255FAF1A848B60B5EBF3B17 /* FTPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC6F5ADC64D8D05199972B89 /* FTPlayerHTTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DEA1024612A6CB105AC404 /* FTPlayerHTTPTests.swift */; };
 		DD9B263A899642E7538D830C /* FTPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A255FAF1A848B60B5EBF3B17 /* FTPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DFBCFBDCE9036724EB0D5A1C /* FTPlayerInternetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2972B6A1A0CEB23D734F7EA1 /* FTPlayerInternetTests.swift */; };
-		E62E596D7BE694D1DF4BE030 /* FTPlayerInternetControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3029395ABD70C6D5DDD7620F /* FTPlayerInternetControlTests.swift */; };
-		FFDE0004975FA802BC5036D4 /* DecodeBackendTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A60BD343BC1B548CCF01DC2 /* DecodeBackendTestSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		058262E6E888605947545128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0900B21822AD09E781A4D8B3 /* FTPlayerSDK */;
-			proxyType = 1;
-			remoteGlobalIDString = 38C424495A494F67BE7D53B9;
-			remoteInfo = FTPlayer;
-		};
 		0860131C4CAE7C0C500DAE70 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0900B21822AD09E781A4D8B3 /* FTPlayerSDK */;
@@ -59,34 +30,9 @@
 			remoteGlobalIDString = 135855467070C9DF70F7BFE6;
 			remoteInfo = FTPlayer;
 		};
-		2CE564BE3AA15CEB041DCB1A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9AF3F9CD1AD60874917ED1FC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2F576CC95780D3C0FCB2D8BC;
-			remoteInfo = FTPlayerDemo;
-		};
-		AB1FF1F1CB23FD6258B9676E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9AF3F9CD1AD60874917ED1FC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2F576CC95780D3C0FCB2D8BC;
-			remoteInfo = FTPlayerDemo;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		5109ED40BBDA43AEB1C741A8 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				D233AAE9FC5F036606279B1F /* FTPlayer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		76F660B98F3742B9F34E2D96 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,44 +47,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		06CCD68685F63FB3566580BF /* MediaFixtureCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MediaFixtureCatalog.json; sourceTree = "<group>"; };
 		0900B21822AD09E781A4D8B3 /* FTPlayerSDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FTPlayerSDK; path = ../SDK/FTPlayer.xcodeproj; sourceTree = "<group>"; };
-		174F53454D3CDFBE84EA3015 /* FTPlayerCapturedMediaRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerCapturedMediaRegressionTests.swift; sourceTree = "<group>"; };
 		1BD330B88DA53A2F39D9B008 /* SampleStreams.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SampleStreams.json; sourceTree = "<group>"; };
-		1CD045B74DA21B2E807828CE /* FTPlayerSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerSmokeTests.swift; sourceTree = "<group>"; };
-		2972B6A1A0CEB23D734F7EA1 /* FTPlayerInternetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerInternetTests.swift; sourceTree = "<group>"; };
-		2DED10107BF8D157C5D9239B /* FTPlayerFormatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerFormatTests.swift; sourceTree = "<group>"; };
-		2F30904FD46C6D71F7FD8A5C /* FTPlayerControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerControlTests.swift; sourceTree = "<group>"; };
-		3029395ABD70C6D5DDD7620F /* FTPlayerInternetControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerInternetControlTests.swift; sourceTree = "<group>"; };
-		32DEA1024612A6CB105AC404 /* FTPlayerHTTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHTTPTests.swift; sourceTree = "<group>"; };
-		3A60BD343BC1B548CCF01DC2 /* DecodeBackendTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeBackendTestSupport.swift; sourceTree = "<group>"; };
 		53060A1806026577DE24869B /* AOVSmartRateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AOVSmartRateController.swift; sourceTree = "<group>"; };
-		575095B9E96C76CD71716577 /* SampleStreams.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SampleStreams.json; sourceTree = "<group>"; };
-		59EBC3D19FA43FE07E141B48 /* FixtureHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureHTTPServer.swift; sourceTree = "<group>"; };
-		81B1FC053389DBB7222F0416 /* FTPlayerDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FTPlayerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		931375B02AD1354E8ACC852C /* FTPlayerMuteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerMuteTests.swift; sourceTree = "<group>"; };
+		81B1FC053389DBB7222F0416 /* FTPlayerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FTPlayerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96BA9BED6FCF0E307C9A14B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9D08A147A72389737F39D739 /* FTPlayerHLSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHLSTests.swift; sourceTree = "<group>"; };
-		9EC647B7AC376D8291C7EACF /* FTPlayerDecodeBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDecodeBackendTests.swift; sourceTree = "<group>"; };
-		BA3CF6970E35D736BBE77E80 /* FTPlayerDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDemoUITests.swift; sourceTree = "<group>"; };
-		C1024EAA3393416AC704617D /* FTPlayerDecodeBackendInternetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDecodeBackendInternetTests.swift; sourceTree = "<group>"; };
-		C748633AA41F816BC00CF62B /* FTPlayerDemoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FTPlayerDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE4F049E579AEDC4159AB250 /* PlaybackTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackTestSupport.swift; sourceTree = "<group>"; };
 		E56AC2340164ED200E583A8D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		E9EEB440DE887EC69C026478 /* FTPlayerPlaybackTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FTPlayerPlaybackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3EE69DF995C09F8373E1448 /* FTPlayerDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDemoTests.swift; sourceTree = "<group>"; };
-		FF233E0A27678873D9B96EB6 /* RemoteFixtureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFixtureStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2556B9D86AB99BA7C81E59E1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C503634AF600A931D2519B6C /* FTPlayer.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		AC01126AEDF6CCD2E776C7D4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -158,47 +75,6 @@
 			name = Projects;
 			sourceTree = "<group>";
 		};
-		64140194095DD5243615F4AC /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F3EE69DF995C09F8373E1448 /* FTPlayerDemoTests.swift */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
-		76F24CF4A6F119A75FA3CB40 /* Playback */ = {
-			isa = PBXGroup;
-			children = (
-				3A60BD343BC1B548CCF01DC2 /* DecodeBackendTestSupport.swift */,
-				59EBC3D19FA43FE07E141B48 /* FixtureHTTPServer.swift */,
-				174F53454D3CDFBE84EA3015 /* FTPlayerCapturedMediaRegressionTests.swift */,
-				2F30904FD46C6D71F7FD8A5C /* FTPlayerControlTests.swift */,
-				C1024EAA3393416AC704617D /* FTPlayerDecodeBackendInternetTests.swift */,
-				9EC647B7AC376D8291C7EACF /* FTPlayerDecodeBackendTests.swift */,
-				2DED10107BF8D157C5D9239B /* FTPlayerFormatTests.swift */,
-				9D08A147A72389737F39D739 /* FTPlayerHLSTests.swift */,
-				32DEA1024612A6CB105AC404 /* FTPlayerHTTPTests.swift */,
-				3029395ABD70C6D5DDD7620F /* FTPlayerInternetControlTests.swift */,
-				2972B6A1A0CEB23D734F7EA1 /* FTPlayerInternetTests.swift */,
-				931375B02AD1354E8ACC852C /* FTPlayerMuteTests.swift */,
-				1CD045B74DA21B2E807828CE /* FTPlayerSmokeTests.swift */,
-				DE4F049E579AEDC4159AB250 /* PlaybackTestSupport.swift */,
-				FF233E0A27678873D9B96EB6 /* RemoteFixtureStore.swift */,
-			);
-			name = Playback;
-			path = Tests/Playback;
-			sourceTree = "<group>";
-		};
-		99DF9005A1FD64202CBEAC1E /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				06CCD68685F63FB3566580BF /* MediaFixtureCatalog.json */,
-				575095B9E96C76CD71716577 /* SampleStreams.json */,
-			);
-			name = Resources;
-			path = Tests/Playback/Resources;
-			sourceTree = "<group>";
-		};
 		B3FB686AAD3C6E034FA58462 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -210,11 +86,7 @@
 		D34F1EA8119945DE8D7AA54E = {
 			isa = PBXGroup;
 			children = (
-				76F24CF4A6F119A75FA3CB40 /* Playback */,
-				99DF9005A1FD64202CBEAC1E /* Resources */,
 				F03FBE9B89BE5728276C3162 /* Sources */,
-				64140194095DD5243615F4AC /* Tests */,
-				EEA3EAB3175B06680C5CBDF1 /* UITests */,
 				DDDB9D9849B1C4DF880CC909 /* Products */,
 				4AF5299C98FACA7384C24831 /* Projects */,
 			);
@@ -224,19 +96,8 @@
 			isa = PBXGroup;
 			children = (
 				81B1FC053389DBB7222F0416 /* FTPlayerDemo.app */,
-				C748633AA41F816BC00CF62B /* FTPlayerDemoUITests.xctest */,
-				E9EEB440DE887EC69C026478 /* FTPlayerPlaybackTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EEA3EAB3175B06680C5CBDF1 /* UITests */ = {
-			isa = PBXGroup;
-			children = (
-				BA3CF6970E35D736BBE77E80 /* FTPlayerDemoUITests.swift */,
-			);
-			name = UITests;
-			path = Tests/UITests;
 			sourceTree = "<group>";
 		};
 		F03FBE9B89BE5728276C3162 /* Sources */ = {
@@ -274,47 +135,6 @@
 			productReference = 81B1FC053389DBB7222F0416 /* FTPlayerDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
-		55BE4104E59B8BC4ADB48607 /* FTPlayerDemoUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3B2F31D5B17B35BB1C1F035F /* Build configuration list for PBXNativeTarget "FTPlayerDemoUITests" */;
-			buildPhases = (
-				BF718BFC172BB84A4E5A5965 /* Sources */,
-				EA196BDB464F4DFA9DD83D1D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B674A290B09D9D3B148D531A /* PBXTargetDependency */,
-			);
-			name = FTPlayerDemoUITests;
-			packageProductDependencies = (
-			);
-			productName = FTPlayerDemoUITests;
-			productReference = C748633AA41F816BC00CF62B /* FTPlayerDemoUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
-		BCD413913F50117D57668A5E /* FTPlayerPlaybackTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 50BC9A0D6A483D13E0FE8DE7 /* Build configuration list for PBXNativeTarget "FTPlayerPlaybackTests" */;
-			buildPhases = (
-				7FCCDD697C13ABA3B2FD5654 /* Sources */,
-				6E861B61937E4B194460ACA2 /* Resources */,
-				2556B9D86AB99BA7C81E59E1 /* Frameworks */,
-				5109ED40BBDA43AEB1C741A8 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2ADA006342DBCB6B2135B44E /* PBXTargetDependency */,
-				9AFC5249816D77FF62A676DB /* PBXTargetDependency */,
-			);
-			name = FTPlayerPlaybackTests;
-			packageProductDependencies = (
-			);
-			productName = FTPlayerPlaybackTests;
-			productReference = E9EEB440DE887EC69C026478 /* FTPlayerPlaybackTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -325,13 +145,6 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					2F576CC95780D3C0FCB2D8BC = {
-						ProvisioningStyle = Automatic;
-					};
-					55BE4104E59B8BC4ADB48607 = {
-						ProvisioningStyle = Automatic;
-						TestTargetID = 2F576CC95780D3C0FCB2D8BC;
-					};
-					BCD413913F50117D57668A5E = {
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -357,8 +170,6 @@
 			projectRoot = "";
 			targets = (
 				2F576CC95780D3C0FCB2D8BC /* FTPlayerDemo */,
-				BCD413913F50117D57668A5E /* FTPlayerPlaybackTests */,
-				55BE4104E59B8BC4ADB48607 /* FTPlayerDemoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -374,28 +185,11 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		6E861B61937E4B194460ACA2 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				26B91DA3B4E47F3893AD9229 /* MediaFixtureCatalog.json in Resources */,
-				4760E044C7D75AD71A732081 /* SampleStreams.json in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B1F6A5B53703804BBD162494 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				126767D959B5F37CA8756405 /* SampleStreams.json in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EA196BDB464F4DFA9DD83D1D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C0B8E8B2958FFF2814D74F80 /* SampleStreams.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,55 +206,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FCCDD697C13ABA3B2FD5654 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FFDE0004975FA802BC5036D4 /* DecodeBackendTestSupport.swift in Sources */,
-				4072E0D69F9F9E72FFD1B769 /* FTPlayerCapturedMediaRegressionTests.swift in Sources */,
-				42732252053240099DD22853 /* FTPlayerControlTests.swift in Sources */,
-				C56694D7CACABB471EA1B5F5 /* FTPlayerDecodeBackendInternetTests.swift in Sources */,
-				A7D23DF0AACF85E08EAEB22B /* FTPlayerDecodeBackendTests.swift in Sources */,
-				21DAA9035DF65C7AA5634687 /* FTPlayerDemoTests.swift in Sources */,
-				6E3F31547021E72D222FA8C2 /* FTPlayerFormatTests.swift in Sources */,
-				5406C3D784261F0036A13708 /* FTPlayerHLSTests.swift in Sources */,
-				DC6F5ADC64D8D05199972B89 /* FTPlayerHTTPTests.swift in Sources */,
-				E62E596D7BE694D1DF4BE030 /* FTPlayerInternetControlTests.swift in Sources */,
-				DFBCFBDCE9036724EB0D5A1C /* FTPlayerInternetTests.swift in Sources */,
-				B5CFA8E9F2074972D88139E2 /* FTPlayerMuteTests.swift in Sources */,
-				6F664871234FEC9A3B571B41 /* FTPlayerSmokeTests.swift in Sources */,
-				19CBCC8596B575DF10EB75C8 /* FixtureHTTPServer.swift in Sources */,
-				B47228F2A27E67BDC6216081 /* PlaybackTestSupport.swift in Sources */,
-				716D0F88BC5CE935CC842E81 /* RemoteFixtureStore.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BF718BFC172BB84A4E5A5965 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				99E4D0AD667C987D970BA8A0 /* FTPlayerDemoUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2ADA006342DBCB6B2135B44E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2F576CC95780D3C0FCB2D8BC /* FTPlayerDemo */;
-			targetProxy = 2CE564BE3AA15CEB041DCB1A /* PBXContainerItemProxy */;
-		};
-		9AFC5249816D77FF62A676DB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FTPlayer;
-			targetProxy = 058262E6E888605947545128 /* PBXContainerItemProxy */;
-		};
-		B674A290B09D9D3B148D531A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2F576CC95780D3C0FCB2D8BC /* FTPlayerDemo */;
-			targetProxy = AB1FF1F1CB23FD6258B9676E /* PBXContainerItemProxy */;
-		};
 		D76761851BBF768F3E140081 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FTPlayer;
@@ -535,6 +283,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 34DKQGSTRU;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,57 +293,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.demo;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		55277A6EEEAC803A3B39524C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.demo.playbacktests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FTPlayerDemo.app/FTPlayerDemo";
-			};
-			name = Release;
-		};
-		7357F032D9FC2CF1893599C2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.demo.uitests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FTPlayerDemo;
-			};
-			name = Debug;
-		};
-		A1483BEADB8798A85EABD92A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.demo.playbacktests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FTPlayerDemo.app/FTPlayerDemo";
 			};
 			name = Debug;
 		};
@@ -665,29 +363,13 @@
 			};
 			name = Debug;
 		};
-		C0B01C210292EB5DD065AD65 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ftplayer.demo.uitests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FTPlayerDemo;
-			};
-			name = Release;
-		};
 		C81AF7F07D0399267C6CAA0A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 34DKQGSTRU;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -708,24 +390,6 @@
 			buildConfigurations = (
 				4ED8235277115DCA59421474 /* Debug */,
 				C81AF7F07D0399267C6CAA0A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		3B2F31D5B17B35BB1C1F035F /* Build configuration list for PBXNativeTarget "FTPlayerDemoUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7357F032D9FC2CF1893599C2 /* Debug */,
-				C0B01C210292EB5DD065AD65 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		50BC9A0D6A483D13E0FE8DE7 /* Build configuration list for PBXNativeTarget "FTPlayerPlaybackTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A1483BEADB8798A85EABD92A /* Debug */,
-				55277A6EEEAC803A3B39524C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

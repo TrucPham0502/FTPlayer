@@ -1,13 +1,14 @@
 # FTPlayer SDK + Demo
 
-## Cấu trúc test hiện tại — 2026-11-24
+## Cấu trúc test hiện tại — 2026-11-27
 
-SDK có target unit `FTPlayerTests` chạy độc lập, không dùng video. Chạy bằng
-`bash Scripts/test.sh unit` hoặc Test trong project SDK. Demo có XCUITest thực
-trên Simulator với video qua URL: `bash Scripts/test.sh ui`. Các regression
-playback trước đây được giữ ở `Demo/Tests/Playback` và cần URL đúng nguồn để
-chạy, không đưa video vào Git hoặc bundle. [Hướng dẫn unit SDK](SDK/FTPlayerTests/README.md)
-và [test video/UI Demo](Demo/Tests/README.md).
+Toàn bộ test nằm trong target unit `FTPlayerTests` của SDK (scheme `FTPlayerUnit`).
+Video test được sinh tổng hợp khi chạy (`SDK/FTPlayerTests/Support`) và phát qua
+HTTP loopback cục bộ, không cần URL Internet hay video trong Git. Chạy bằng
+`./Scripts/test.sh` hoặc Test trong project SDK. Demo không còn target test; Demo
+chỉ dùng để thử video thật — lỗi tìm thấy trên video thật phải được tái hiện thành
+unit test trong SDK.
+
 Hai project iOS riêng, clone từ nguồn FTPlayer được cung cấp:
 
 - `SDK/FTPlayer.xcodeproj`: framework **FTPlayer**, chứa engine FTPlayer, audio, cache và Metal renderer.
@@ -161,7 +162,7 @@ Migration: thay `didUpdatePreparationProgress` bằng `didChangePreparationState
 
 SDK giữ mức nguồn: mono được nhân đôi sang stereo với gain 1 trên từng kênh, như AVFoundation; stereo và các phép downmix khác giữ cấu hình cũ. Bản trước dùng ma trận mặc định libswresample khiến mono→stereo giảm 3,01 dB mỗi kênh. `volume` vẫn trong 0...1, mute giữ volume đã chọn. Audio gốc thu nhỏ vẫn phát ở mức gốc.
 
-Log có cấu hình resampler `dualMonoUnity` và `audioDecodedSamples`, `audioDecodedRMSDBFS`, `audioDecodedPeakDBFS`. Đây là mức PCM tích lũy đã decode trước mixer volume, gồm dữ liệu decode ahead và seek; không phải mức âm thanh đo tại loa. Đo ở decode thread, không xử lý/log trên realtime audio callback. Chạy `./Scripts/test.sh audio` cho 8 ca đo PCM + 2 ca mute/seek/rate; test tự tạo WAV, không dùng bản ghi camera riêng.
+Log có cấu hình resampler `dualMonoUnity` và `audioDecodedSamples`, `audioDecodedRMSDBFS`, `audioDecodedPeakDBFS`. Đây là mức PCM tích lũy đã decode trước mixer volume, gồm dữ liệu decode ahead và seek; không phải mức âm thanh đo tại loa. Đo ở decode thread, không xử lý/log trên realtime audio callback. Test `FTPlayerMuteTests` (SDK) gồm 8 ca đo PCM + 2 ca mute/seek/rate; test tự tạo WAV, không dùng bản ghi camera riêng.
 
 Xác nhận sau sửa audio: Mac **191 pass**; Simulator **178 pass, 13 skip hardware**. Đã đo lại clip camera thực tế; [kết quả đo, test trước/sau và log](Validation/AudioLevel/SUMMARY.md).
 
@@ -192,27 +193,13 @@ Có thể lấy thư mục log qua Files → FTPlayer Demo → FTPlayerLogs, ho�
 
 ## Kiểm tra
 
-Các lệnh thường dùng:
+```sh
+./Scripts/test.sh                                                       # toàn bộ FTPlayerUnit
+./Scripts/test.sh -only-testing:FTPlayerTests/FTPlayerHLSPlaybackTests  # một class/test
+FTPLAYER_TEST_DESTINATION='platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' ./Scripts/test.sh
+```
 
-| Lệnh | Phạm vi |
-| --- | --- |
-| `./Scripts/test.sh daily-startup` | Đo từng video trong manifest riêng: frame đầu, từng state và backend; xem Demo/Tests/Playback/README.md |
-| `./Scripts/test.sh startup-log` | FFmpeg lọc đúng mức log khi mở file, vẫn giữ native error |
-| `./Scripts/test.sh spam-seek` | 28 ca spam ±10s, 200 lệnh liên tiếp, rate 2×–16×, seek đầu/cuối và UI |
-| `./Scripts/test.sh audio` | PCM mono/stereo, resample, mức tín hiệu và mute/seek/rate |
-| `./Scripts/test.sh preparation` | Tiến độ tới frame đầu, metadata, lỗi/Stop/đổi nguồn và UI |
-| `./Scripts/test.sh session-cache` | Stop/Play giữ cache, đổi URL/deinit dọn cache, test UI |
-| `./Scripts/test.sh cache` | HTTP Range, cache, seek đầu/giữa/cuối, offline/recovery |
-| `./Scripts/test.sh catalog-cache` | Toàn bộ Link test, bytes/timeline/seek/replay; báo riêng DASH thiếu demuxer |
-| `./Scripts/test.sh catalog-controls` | Từng Link test: seek đầu/giữa/cuối, 16× trong cache, về 1× và Stop/Play; xem [phạm vi/kết quả](Demo/Tests/Playback/CATALOG_SEEK_16X_CACHE.md) |
-| `./Scripts/test.sh catalog-round3` | 10 nguồn mới vòng 3: 10 ca playback/cache và 10 ca seek/16×/warm replay |
-| `./Scripts/test.sh catalog-stress` | 5 nguồn nhãn Khó: discontinuity/quảng cáo, AES đổi key/IV, timestamp và gap A/V |
-| `./Scripts/test.sh malformed-media` | 10 nguồn sai bitstream/metadata, cache mặc định/bật, seek 1×/4×/16× và báo lỗi; [nguồn/phạm vi](Demo/Tests/Playback/MALFORMED_MEDIA_LINKS.md) |
-| `./Scripts/test.sh mux-16x` | Mux master bật cache, renderer thật, 16× liên tục trên Auto/FFmpeg/Hardware |
-| `./Scripts/test.sh errors` | HTTP lỗi, mất mạng, timeout và callback lỗi |
-| `./Scripts/test.sh local` | SDK và Demo với fixture/HTTP loopback |
-| `./Scripts/test.sh backends-all` | FFmpeg/hardware, seek và rate 2×–16× |
-| `./Scripts/test.sh full` | Toàn bộ local, Internet và backend |
+Script ghi `.xcresult` và log tại `build/TestResults/<timestamp>`. Các ca `hardware` skip trên Simulator; không coi software fallback là hardware pass. Các số liệu pass/skip bên dưới là kết quả lịch sử của bộ test cũ.
 
 Đã sửa log FFmpeg vượt ngưỡng khi mở MP4: cùng clip/cold cache, đoạn Demo 26% đo được **2.36s → 0.65s**. Bộ local sau sửa: Mac **229 pass**; Simulator **204 pass, 25 skip hardware**. [Bằng chứng trước/sau và log](Validation/Startup26/SUMMARY.md).
 
@@ -221,42 +208,19 @@ Xác nhận sau sửa spam seek: Mac **219 pass**; Simulator iOS 18.4 **194 pass
 Đợt xác nhận cache gần nhất (2026-10-22): Mac Designed for iPad **167 pass**; Simulator iOS 18.4 **156 pass, 11 skip hardware**. Đây là kết quả local đã ghi nhận; bộ Internet/backend đầy đủ có phạm vi riêng bên dưới.
 
 
-Unit SDK ở [SDK/FTPlayerTests](SDK/FTPlayerTests/README.md), chạy `./Scripts/test.sh unit` không cần video. [Demo playback/UI](Demo/Tests/README.md) dùng video qua URL; `full` cần cấu hình đủ nguồn và thiết bị thích hợp cho từng nhóm.
-
-Các smoke test playback ở `Demo/Tests/Playback/FTPlayerSmokeTests.swift`; log/diagnostics thuần ở SDK unit. Product → Test trong scheme `FTPlayerDemo` chạy XCUITest giao diện; scheme `FTPlayerPlayback` dành cho integration cần URL nguồn.
-
 `Validation/` lưu kết quả build/test, mô tả thay đổi và hash nguồn gốc. Engine được clone từ nguồn gốc và đã sửa các lỗi tìm được qua regression test; xem `Validation/CHANGES.md`. Kiểm tra URL thực tế trên iPhone khi tái hiện lỗi hardware decoder.
 
 
-## Bộ test định dạng, Internet và seek/rate
+## Bộ test định dạng, seek/rate và backend
 
-Xem [cấu trúc hiện tại](Demo/Tests/README.md) và [ma trận lịch sử](Tests/TEST_MATRIX.md). Unit ở `SDK/FTPlayerTests`; playback/UI ở `Demo/Tests`:
-
-- Scheme **FTPlayerUnit**: 90 unit logic của SDK, không video/host Demo.
-- Scheme **FTPlayerDemo** hoặc **FTPlayerDemoUI**: XCUITest app thật bằng URL public.
-- Scheme **FTPlayerPlayback**: regression video/HTTP/cache; cần manifest URL đúng nguồn, không bundle video.
-- Scheme **FTPlayerInternet**: URL Internet thật từ Apple, Mux, Test Videos, W3C và FFmpeg samples. Có ca DASH kiểm tra capability và từ chối đúng nếu binary không có demuxer.
-- Bộ kết hợp seek/rate: MP4 H.264+AAC, MP4 HEVC, HLS H.264+AAC, HLS HEVC ở **2x/4x/8x/16x**, seek tiến, seek ngược rồi đổi ngay 1x, rapid seek + đổi rate và HTTP cache 8x.
-
-```sh
-./Scripts/test.sh unit
-./Scripts/test.sh ui
-./Scripts/test.sh playback-public
-# Nhóm đầy đủ cần cấu hình URL nguồn và thiết bị phù hợp:
-./Scripts/test.sh all
-# Chọn Simulator khác:
-FTPLAYER_TEST_DESTINATION='platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' ./Scripts/test.sh all
-```
-
-Script tạo `.xcresult`, log, CSV/Markdown và attachment JSON tại `build/TestResults/<timestamp>`. Attachment ghi số frame, source URL, states, lỗi, target seek, clock, PTS và tốc độ đo được; test không chỉ kiểm tra setter rate.
+- `FTPlayerFormatPlaybackTests`, `FTPlayerSmokeTests`: container/codec (MP4, MOV, MKV, TS, FLV, AVI, raw H.264/H.265, audio-only).
+- `FTPlayerSeekRateControlTests`: MP4 H.264+AAC, MP4 HEVC, HLS H.264, HLS HEVC ở **2x/4x/8x/16x**, seek tiến, seek ngược rồi đổi ngay 1x, rapid seek + đổi rate và HTTP cache 8x.
+- `FTPlayerDecodeBackendTests`: cùng các nguồn trên với policy FFmpeg/hardware, từng rate nguyên 2×…16×, pause/seek/gần cuối, HLS 60 fps ở 16×.
+- `FTPlayerHTTPPlaybackTests`, `FTPlayerHLSPlaybackTests`: HTTP Range, cache, offline/recovery, HLS TS/fMP4/AES-128/master có audio riêng, cache HLS ở 16×.
+- `FTPlayerControlPlaybackTests`, `FTPlayerReadySeekTests`, `FTPlayerRateRecoveryTests`, `FTPlayerWeakNetworkRateTests`, `FTPlayerHighRateLoadPlaybackTests`: seek/rate/stop/replay, spam seek, mạng yếu, tải ở rate cao.
+- `FTPlayerMuteTests`, `FTPlayerAudioSessionTests`, `FTPlayerCapturedMediaRegressionTests`: audio/mute, audio session và các regression từ video thực tế (tái hiện bằng video tổng hợp).
 
 Demo có nút **Link test** với cùng catalog `Demo/Sources/SampleStreams.json`. Danh sách mở trong bảng dọc có thể cuộn, chia nhóm theo container; tên dài tự xuống dòng. Ô tìm kiếm lọc theo tên, codec (H.265/HEVC, H.264), container và URL. Chạm một dòng để đóng bảng và mở stream; nút × đóng bảng mà không đổi video. Chọn stream rồi thử thanh seek và rate; xuất log nếu gặp lỗi. Test tự động dùng renderer kiểm tra riêng, không thay nội dung đang phát trong khung video của demo.
-
-Nhóm [10 nguồn sai bitstream/metadata](Demo/Tests/Playback/MALFORMED_MEDIA_LINKS.md) gồm chín URL mới có nhãn **Lỗi nguồn** và Custom IV đã có sẵn. Hai file trùng track ID/WebM hỏng được ghi rõ dùng kiểm tra báo lỗi; các clip keyframe hai frame dùng kiểm tra seek/EOF.
-
-Catalog phân phối hiện gồm 15 URL MP4; các nhóm dưới đây là inventory lịch sử và cần URL opt-in. Trước cleanup catalog có 54 URL; có HEVC 1080p/4K, HEVC trong TS/fMP4, HDR/PQ, AES-128/SAMPLE-AES, audio riêng, WebM VP8/VP9, MOV HEVC/PCM và AVI MPEG-4. [5 nguồn nhãn Khó](Demo/Tests/Playback/DIFFICULT_PUBLIC_STREAMS.md) kiểm tra discontinuity, IV/key, timestamp và gap A/V bằng `./Scripts/test.sh catalog-stress`. Chạy 10 nguồn vòng 3 cùng kiểm tra cache/seek/16× bằng `./Scripts/test.sh catalog-round3`; xem [nguồn và kết quả vòng 3](Demo/Tests/Playback/PUBLIC_STREAM_EXPANSION_ROUND3.md). `catalog-more` giữ 10 nguồn của [vòng 2](Demo/Tests/Playback/PUBLIC_STREAM_EXPANSION_ROUND2.md), `catalog-extra` giữ 8 nguồn của [vòng đầu](Demo/Tests/Playback/PUBLIC_STREAM_EXPANSION.md).
-
-Fixture local tại `Demo/Fixtures` được giữ trên máy và ignore; các target test hiện không dùng/bundle thư mục này. Playback regression tải nguồn URL đã cấu hình vào sandbox tạm và kiểm tra SHA-256. `Validation/Network/fixtures-manifest.json` ghi nguồn, SHA-256 và codec probe. Khi muốn tạo lại: đặt `FFMPEG_BIN` và `FFPROBE_BIN`, chạy `python3 Scripts/prepare-fixtures.py`. Đây là test data; không bundle các fixture vào SDK framework.
 
 Nguồn công khai: [Apple Streaming Examples](https://developer.apple.com/streaming/examples/), [Mux HLS test streams](https://test-streams.mux.dev/), [Test Videos H.264](https://test-videos.co.uk/bigbuckbunny/mp4-h264), [Test Videos HEVC](https://test-videos.co.uk/bigbuckbunny/mp4-h265), [FFmpeg samples](https://samples.ffmpeg.org/FLV/) và [W3C trailer](https://media.w3.org/2010/05/bunny/trailer.mp4).
 
@@ -271,30 +235,22 @@ player.replaceVideo()
 
 `hardware` bắt buộc session VideoToolbox xác nhận hardware acceleration; nếu không có sẽ báo lỗi, không tự fallback. `automatic` ưu tiên hardware đã xác minh trên iOS 17 trở lên, nếu không xác minh được thì dùng FFmpeg; frame từ FFmpeg, hardware, VideoToolbox software và session chưa xác minh được thống kê riêng. API xác minh hardware có từ iOS 17 trong SDK Xcode đang dùng; iOS cũ vẫn dùng Auto/FFmpeg và không được tính hardware pass nếu không xác minh được.
 
-Chạy `./Scripts/test.sh backends-all` cho 113 ca: MP4 H.264/HEVC, HLS H.264/HEVC, 2 backend, 2×/4×/8×/16× + seek, rapid seek/rate. Local còn chạy từng mức nguyên 2×…16× và pause/seek/resume/gần cuối. Chi tiết: `Tests/DECODE_BACKENDS.md`; kết quả thực chạy và các lỗi đã sửa: `Validation/DecodeBackends/SUMMARY.md`. Các ca hardware skip trên Simulator được ghi rõ; không coi software fallback là hardware pass.
+Chạy `./Scripts/test.sh -only-testing:FTPlayerTests/FTPlayerDecodeBackendTests`: MP4 H.264/HEVC, HLS H.264/HEVC, 2 backend, 2×/4×/8×/16× + seek, rapid seek/rate, từng mức nguyên 2×…16× và pause/seek/resume/gần cuối. Kết quả lịch sử và các lỗi đã sửa: `Validation/DecodeBackends/SUMMARY.md`. Các ca hardware skip trên Simulator được ghi rõ; không coi software fallback là hardware pass.
 
 ## Chạy trực tiếp trên Mac Apple Silicon
 
-Chọn scheme **FTPlayerDemo** và đích **My Mac (Designed for iPad)** rồi Run như Simulator. SDK dùng slice iOS arm64; chế độ này đã build/ký và Run được với cấu hình Signing hiện tại. Scheme Demo đã đặt executable rõ ràng là `FTPlayerDemo.app` cho Run/Profile. Các scheme Internet/DecodeBackends phục vụ test riêng; không cần chọn chúng để dùng demo.
+Chọn scheme **FTPlayerDemo** và đích **My Mac (Designed for iPad)** rồi Run như Simulator. SDK dùng slice iOS arm64; chế độ này đã build/ký và Run được với cấu hình Signing hiện tại. Scheme Demo đã đặt executable rõ ràng là `FTPlayerDemo.app` cho Run/Profile.
 
-Chạy riêng hardware trên Mac (cần Development Team hợp lệ):
-
-```sh
-FTPLAYER_TEST_DESTINATION='platform=macOS,arch=arm64,variant=Designed for iPad' \
-FTPLAYER_DEVELOPMENT_TEAM=YOUR_TEAM_ID \
-FTPLAYER_TEST_BACKEND=hardware ./Scripts/test.sh backends-all
-```
-
-35 ca fixture + 20 ca URL công khai + 5 ca video PrivatePlayback riêng từ `FTPlayerPrivatePlaybackSource.json` trong Documents hoặc biến môi trường test `FTPLAYER_PRIVATE_PLAYBACK_URL`. Nếu không có URL riêng, 5 ca PrivatePlayback được skip rõ ràng. Kết quả thực chạy: `Validation/MacHardware/SUMMARY.md`. Hardware pass yêu cầu VideoToolbox xác nhận phần cứng, số frame hardware > 0 và không có FFmpeg/VT software/unverified fallback. Kết quả này áp dụng cho Mac đang chạy; cần kiểm tra riêng trên iPhone khi phát hành.
+Unit test không chạy được trên đích My Mac (Designed for iPad); các ca `hardware` cần thiết bị có VideoToolbox phần cứng (đặt `FTPLAYER_TEST_DESTINATION` và `FTPLAYER_DEVELOPMENT_TEAM`). Kết quả Mac lịch sử: `Validation/MacHardware/SUMMARY.md`. Hardware pass yêu cầu VideoToolbox xác nhận phần cứng, số frame hardware > 0 và không có FFmpeg/VT software/unverified fallback.
 
 Hardware recovery 2026-10-22: đã sửa đứng hình HLS 60 fps ở 16×, đồng bộ bỏ frame trễ và phục hồi lỗi H264 bằng keyframe trên hardware. 55 ca hardware + 48 FFmpeg + 24 API/control/mute pass trên Mac; xem `Validation/MacHardware/SUMMARY.md`. URL PrivatePlayback cũ trả 500 đã được cấp lại qua API cho cùng clip; cấu hình test local dùng URL mới.
 
 
 ## Cache khi seek và mất mạng
 
-Đặt `player.useCache = true` trước khi mở video; demo đã bật sẵn HTTP cache. Seek đầu/giữa/cuối đọc lại byte đã lưu trên máy, chỉ tải khoảng còn thiếu. Mất mạng vẫn phát/seek được vùng đã cache; đến phần thiếu thì buffering và tự tải/phát tiếp khi kết nối trở lại. Stop hủy chờ ngay. Cache giữ trong phiên player; Stop/Play cùng link giữ cache, đổi link/deinit xoá cache. Cache hỗ trợ HTTP file và HLS VOD: TS, fMP4, MP4 độc lập, media/master playlist, byte range, init map thay đổi và AES-128 identity. Master dùng variant đầu và audio DEFAULT/AUTOSELECT cùng group; timeline cache là phần có đủ video, audio, map và key. Tài nguyên dùng chung cơ chế cache theo URL + byte range, không phân nhánh theo link Apple/Mux. Live, DRM, GAP/DEFINE và external VIDEO group chưa thuộc phạm vi disk cache này; DASH chưa có demuxer trong binary hiện tại. Xem [phạm vi và regression](Demo/Tests/Playback/HLS_CACHE_COVERAGE.md).
+Đặt `player.useCache = true` trước khi mở video; demo đã bật sẵn HTTP cache. Seek đầu/giữa/cuối đọc lại byte đã lưu trên máy, chỉ tải khoảng còn thiếu. Mất mạng vẫn phát/seek được vùng đã cache; đến phần thiếu thì buffering và tự tải/phát tiếp khi kết nối trở lại. Stop hủy chờ ngay. Cache giữ trong phiên player; Stop/Play cùng link giữ cache, đổi link/deinit xoá cache. Cache hỗ trợ HTTP file và HLS VOD: TS, fMP4, MP4 độc lập, media/master playlist, byte range, init map thay đổi và AES-128 identity. Master dùng variant đầu và audio DEFAULT/AUTOSELECT cùng group; timeline cache là phần có đủ video, audio, map và key. Tài nguyên dùng chung cơ chế cache theo URL + byte range, không phân nhánh theo link Apple/Mux. Live, DRM, GAP/DEFINE và external VIDEO group chưa thuộc phạm vi disk cache này; DASH chưa có demuxer trong binary hiện tại.
 
-Chạy lại 96 ca HTTP/cache bằng `./Scripts/test.sh cache`, hoặc nhóm playback bằng `./Scripts/test.sh playback` (số ca nêu ở đây là kết quả lịch sử). Test video nằm trong `Demo/Tests/Playback`.
+Test HTTP/cache: `FTPlayerHTTPPlaybackTests`, `FTPlayerHLSPlaybackTests` (SDK).
 
 ### Thanh cache đã tải
 
@@ -315,7 +271,7 @@ Cold open cache có giới hạn 30 giây và trả NSURLErrorTimedOut nếu thi
 - Deinit player xoá video và index của phiên. Player mới luôn có phiên riêng, kể cả cùng URL. Không xoá cache của player khác còn đang dùng.
 - Nếu app bị kill/crash không có deinit, lần dùng cache ở tiến trình mới sẽ dọn thư mục phiên cũ và cache persistent của bản trước. Không phục hồi cache qua lần mở app.
 
-Chạy lại `./Scripts/test.sh session-cache`; bằng chứng tại Validation/SessionCache/SUMMARY.md. Đây là chính sách hiện tại, thay cho chính sách giữ cache lâu dài trong các báo cáo trước.
+Test: `FTPlayerHTTPPlaybackTests` (SDK); bằng chứng lịch sử tại Validation/SessionCache/SUMMARY.md. Đây là chính sách hiện tại, thay cho chính sách giữ cache lâu dài trong các báo cáo trước.
 
 
 ### Xcode Run trên My Mac báo thiếu AVPlayerView
@@ -327,13 +283,13 @@ Nếu dyld báo `_OBJC_CLASS_$_AVPlayerView` từ `libViewDebuggerSupport.dylib`
 
 SDK bắt kịp decoder chậm bằng random-access packet có thể hiển thị, giữ đầy đủ reorder window sau flush và bảo vệ preroll của seek. Không chọn keyframe có cờ DISCARD của MP4 edit list. Patch làm tròn DTS của HLS đã cập nhật cho dependency FFmpeg 9, kèm source/config/hash và công cụ rebuild.
 
-Chạy `./Scripts/test.sh sustained-rate` (9 ca áp lực decoder + packet queue) và `./Scripts/test.sh hls-seek` (22 ca demux/spam seek/rate). Test source playback nằm trong `Demo/Tests/Playback`; media không bundle; clip camera riêng dùng manifest opt-in, hướng dẫn ở [SDK test README](Demo/Tests/Playback/README.md). [Báo cáo trước/sau, số liệu thiết bị thật và log](Validation/HighRateFreeze/SUMMARY.md).
+Test: `FTPlayerHighRateLoadPlaybackTests`, `FTPlayerControlPlaybackTests` và `FTPlayerHLSPlaybackTests` (SDK). [Báo cáo trước/sau, số liệu thiết bị thật và log](Validation/HighRateFreeze/SUMMARY.md).
 
 ### Tải trước theo tốc độ phát
 
 HTTP cache tăng cửa sổ tải trước trên đĩa: **1× 8 MiB, 2× 16 MiB, 4× 32 MiB, 8×–16× mục tiêu 64 MiB**; mỗi Range tối đa 4 MiB. Giảm rate giữ các bytes đã tải. Request không có hoạt động mạng 10 giây sau ready tự nối lại từ bytes còn thiếu, kể cả chưa có reader chờ. Cold open giữ timeout mở nguồn. Cache vẫn chỉ tồn tại trong session: Stop/play cùng link giữ lại, đổi link/deinit xóa.
 
-Chạy lại `./Scripts/test.sh adaptive-cache` (4 ca) hoặc `./Scripts/test.sh cache` (96 ca). Chi tiết policy, diagnostics và test source: [Demo playback](Demo/Tests/Playback/README.md).
+Test: `FTPlayerHTTPPlaybackTests` (SDK).
 
 Cửa sổ tải trước là mục tiêu: khi read head di chuyển, một Range đang tải có thể vượt mục tiêu dưới 4 MiB. Cache đã tải ở rate cao hoặc vùng seek khác vẫn được giữ trong session.
 
@@ -343,14 +299,14 @@ Ngay dưới trạng thái phát có phần **Log mã lỗi**: domain/code gốc
 
 ### HTTPS cho HLS sau nâng FFmpeg 9
 
-Đã bật native HTTPS/TLS bằng Apple Secure Transport trong libavformat, giữ HLS seek patch. Regression kiểm tra protocol nằm trong `Demo/Tests/Playback/FTPlayerHLSTests.swift`; script rebuild cùng SDK tại [rebuild-https-support.py](SDK/Scripts/FFmpeg/rebuild-https-support.py). Script `.sh` hiện đã bổ sung mặc định HTTPS/TLS/HLS cho mọi target. [Bằng chứng playlist gateway trước/sau](Validation/HLSGateway/SUMMARY.md).
+Đã bật native HTTPS/TLS bằng Apple Secure Transport trong libavformat, giữ HLS seek patch. Regression kiểm tra protocol nằm trong `SDK/FTPlayerTests/HLS`; script rebuild cùng SDK tại [rebuild-https-support.py](SDK/Scripts/FFmpeg/rebuild-https-support.py). Script `.sh` hiện đã bổ sung mặc định HTTPS/TLS/HLS cho mọi target. [Bằng chứng playlist gateway trước/sau](Validation/HLSGateway/SUMMARY.md).
 
 
 ### HLS VOD gồm MP4 độc lập / discontinuity
 
 SDK chuẩn hóa timestamp các MP4 bắt đầu lại từ 0 thành timeline toàn playlist, sửa seek đầu/giữa/cuối và clock lùi khi 16×. Session cache lưu resource trên đĩa qua Range proxy; tải trước tăng theo rate, giữ Stop/replay, xóa khi đổi URL/deinit. Các dạng HLS khác tiếp tục dùng demuxer native.
 
-Test cùng SDK: `./Scripts/test.sh hls-review` (12 ca opt-in, input riêng trong Documents). Mac Designed for iPad: 12/12 với 40 segment /21:05 và 12/12 với 83 segment /43:30; HLS regression 13/13. Không thay 21 archive FFmpeg do user tự build. Chi tiết: [test source và cách chạy](Demo/Tests/Playback/README.md), [bằng chứng trước/sau](Validation/HLSFullReview/SUMMARY.md).
+Test: `FTPlayerHLSPlaybackTests` (SDK). Kết quả lịch sử trên Mac Designed for iPad: 12/12 với 40 segment /21:05 và 12/12 với 83 segment /43:30; HLS regression 13/13. Không thay 21 archive FFmpeg do user tự build. Chi tiết: [bằng chứng trước/sau](Validation/HLSFullReview/SUMMARY.md).
 
 
 Sửa cache HLS0% khi server trả HEAD403 nhưng GET206 hợp lệ: metadata fallback Range một byte; prefetch 1×8MiB đến16×64MiB. Đã kiểm tra gateway thật và label Demo trên Mac. Chi tiết: [log/test trước và sau sửa](Validation/HLSCacheProgress/SUMMARY.md).
@@ -360,4 +316,4 @@ Sửa cache HLS0% khi server trả HEAD403 nhưng GET206 hợp lệ: metadata fa
 
 Các giá trị tuning mặc định của toàn SDK được tập trung tại [FTPlayerSDKConfiguration.swift](SDK/Sources/API/Configuration/FTPlayerSDKConfiguration.swift): playback/rate/seek, load control, audio/video, network/cache/HLS, renderer và diagnostics. Đây là cấu hình lúc build, dùng `static let` bất biến; sửa file này rồi build lại SDK để đổi mặc định. Các API điều khiển và `player.loadControlConfiguration` vẫn ghi đè cấu hình cho từng player. Mã HTTP, mã lỗi, cấu trúc codec, hệ số màu chuẩn và phép đổi đơn vị giữ tại nơi sử dụng vì chúng là hằng số kỹ thuật.
 
-Policy mới dùng `FTPlayerLoadControlConfiguration` theo quy tắc Media3/ExoPlayer: mặc định50giây media, điều chỉnh minimum theo rate và chặn bởi maximum, kết hợp byte-target theo selected tracks. Không áp dụng đề xuất10giây phát thực/16MiB. Bộ điều khiển demux dùng chung các định dạng; disk read-ahead dùng sample index của file hoặc timeline segment khi cache hỗ trợ. Cache cũ vẫn giữ trong session. Cấu hình trước open và cách chạy40 regression: [Demo playback](Demo/Tests/Playback/README.md). Báo cáo: [ExoLoadControl](Validation/ExoLoadControl/SUMMARY.md).
+Policy mới dùng `FTPlayerLoadControlConfiguration` theo quy tắc Media3/ExoPlayer: mặc định50giây media, điều chỉnh minimum theo rate và chặn bởi maximum, kết hợp byte-target theo selected tracks. Không áp dụng đề xuất10giây phát thực/16MiB. Bộ điều khiển demux dùng chung các định dạng; disk read-ahead dùng sample index của file hoặc timeline segment khi cache hỗ trợ. Cache cũ vẫn giữ trong session. Báo cáo: [ExoLoadControl](Validation/ExoLoadControl/SUMMARY.md).

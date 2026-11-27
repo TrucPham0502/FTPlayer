@@ -1,22 +1,33 @@
 import XCTest
 @testable import FTPlayer
 
-/// Uses remote URLs directly, including long VOD HLS. No local substitution of failed URLs.
-final class FTPlayerInternetControlTests: PlaybackTestCase {
-    private func stream(_ id: String) throws -> URL {
-        let data = try internetStreamCatalogData()
-        let catalog = try JSONSerialization.jsonObject(with: data) as! [[String: Any]]
-        let row = try configuredInternetSource(catalog.first { $0["id"] as? String == id }, id: id)
-        return try XCTUnwrap(URL(string: row["url"] as! String))
-    }
-    private func checkSeekAndRate(_ id: String, rate: Float, cache: Bool = false) throws {
-        var url = try stream(id)
-        if cache {
-            var parts = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            parts.queryItems = (parts.queryItems ?? []) + [URLQueryItem(name: "ftplayer-test", value: UUID().uuidString)]
-            url = parts.url!
-        }
-        let s = try start(url, cache: cache, timeout: 45)
+/// Seek while running at 2-16x, then seek back and return to 1x, with the automatic
+/// decode policy over the loopback HTTP server.
+final class FTPlayerSeekRateControlTests: DecodeBackendTestCase {
+    func testMP4H264AACSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("sample.mp4", rate: 2) }
+    func testMP4H264AACSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("sample.mp4", rate: 4) }
+    func testMP4H264AACSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("sample.mp4", rate: 8) }
+    func testMP4H264AACSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("sample.mp4", rate: 16) }
+    func testMP4H264AACRapidSeekAndRateChanges() throws { try rapidSeekAndRate("sample.mp4") }
+    func testMP4HEVCSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("internet-hevc.mp4", rate: 2) }
+    func testMP4HEVCSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("internet-hevc.mp4", rate: 4) }
+    func testMP4HEVCSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("internet-hevc.mp4", rate: 8) }
+    func testMP4HEVCSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("internet-hevc.mp4", rate: 16) }
+    func testMP4HEVCRapidSeekAndRateChanges() throws { try rapidSeekAndRate("internet-hevc.mp4") }
+    func testHLSH264AACSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-ts/index.m3u8", rate: 2) }
+    func testHLSH264AACSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-ts/index.m3u8", rate: 4) }
+    func testHLSH264AACSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-ts/index.m3u8", rate: 8) }
+    func testHLSH264AACSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-ts/index.m3u8", rate: 16) }
+    func testHLSH264AACRapidSeekAndRateChanges() throws { try rapidSeekAndRate("hls-ts/index.m3u8") }
+    func testHLSHEVCSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc/index.m3u8", rate: 2) }
+    func testHLSHEVCSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc/index.m3u8", rate: 4) }
+    func testHLSHEVCSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc/index.m3u8", rate: 8) }
+    func testHLSHEVCSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc/index.m3u8", rate: 16) }
+    func testHLSHEVCRapidSeekAndRateChanges() throws { try rapidSeekAndRate("hls-hevc/index.m3u8") }
+    func testMP4H264CachedSeekAt8xThenReturnTo1x() throws { try checkSeekAndRate("sample.mp4", rate: 8, cache: true) }
+
+    private func checkSeekAndRate(_ source: String, rate: Float, cache: Bool = false) throws {
+        let s = try start(http(source), cache: cache, timeout: 45)
         try assertPlayback(s, timeout: 20)
         let duration = s.player.duration
         try require(duration.isFinite && duration > 5 && duration < 86400, "Combined seek/rate needs finite VOD duration")
@@ -63,8 +74,8 @@ final class FTPlayerInternetControlTests: PlaybackTestCase {
         try require(until(25) { s.sink.frames > afterFrames + 2 && s.player.progress >= backTarget + 0.2 || s.failure != nil }, "PLAYER could not return to 1x after high-rate seek")
         try require(s.failure == nil, "PLAYER error returning to normal rate")
     }
-    private func rapidSeekAndRate(_ id: String) throws {
-        let s = try start(stream(id), timeout: 45); try assertPlayback(s, timeout: 20)
+    private func rapidSeekAndRate(_ source: String) throws {
+        let s = try start(http(source), timeout: 45); try assertPlayback(s, timeout: 20)
         var callbacks = 0
         let fractions: [Double] = [0.1, 0.6, 0.25, 0.7]
         for (index, rate) in [Float(2), 4, 8, 16].enumerated() {
@@ -79,25 +90,4 @@ final class FTPlayerInternetControlTests: PlaybackTestCase {
         try require(until(20) { s.sink.frames > before + 2 || s.failure != nil }, "PLAYER video stalled after combined stress")
         try require(s.failure == nil, "PLAYER failed after combined stress")
     }
-    func testMP4H264AACSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-h264-w3c", rate: 2) }
-    func testMP4H264AACSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-h264-w3c", rate: 4) }
-    func testMP4H264AACSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-h264-w3c", rate: 8) }
-    func testMP4H264AACSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-h264-w3c", rate: 16) }
-    func testMP4H264AACRapidSeekAndRateChanges() throws { try rapidSeekAndRate("mp4-h264-w3c") }
-    func testMP4HEVCSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-hevc", rate: 2) }
-    func testMP4HEVCSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-hevc", rate: 4) }
-    func testMP4HEVCSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-hevc", rate: 8) }
-    func testMP4HEVCSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("mp4-hevc", rate: 16) }
-    func testMP4HEVCRapidSeekAndRateChanges() throws { try rapidSeekAndRate("mp4-hevc") }
-    func testHLSH264AACSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-media", rate: 2) }
-    func testHLSH264AACSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-media", rate: 4) }
-    func testHLSH264AACSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-media", rate: 8) }
-    func testHLSH264AACSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-media", rate: 16) }
-    func testHLSH264AACRapidSeekAndRateChanges() throws { try rapidSeekAndRate("hls-media") }
-    func testHLSHEVCSeekAt2xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc", rate: 2) }
-    func testHLSHEVCSeekAt4xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc", rate: 4) }
-    func testHLSHEVCSeekAt8xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc", rate: 8) }
-    func testHLSHEVCSeekAt16xThenSeekBackTo1x() throws { try checkSeekAndRate("hls-hevc", rate: 16) }
-    func testHLSHEVCRapidSeekAndRateChanges() throws { try rapidSeekAndRate("hls-hevc") }
-    func testMP4H264CachedSeekAt8xThenReturnTo1x() throws { try checkSeekAndRate("mp4-h264-w3c", rate: 8, cache: true) }
 }

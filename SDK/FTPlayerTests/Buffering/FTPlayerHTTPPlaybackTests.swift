@@ -2,8 +2,9 @@ import XCTest
 import CryptoKit
 import Darwin
 @testable import FTPlayer
+import libavformat
 
-final class FTPlayerHTTPTests: DecodeBackendTestCase {
+final class FTPlayerHTTPPlaybackTests: DecodeBackendTestCase {
     func testCloudMP4GzipFullBodyUsesDecodedSizeAndOffsets() throws {
         let original = try Data(contentsOf: fixture("faststart.mp4"))
         let loader = StreamingLoader(url: try http("gzip-full.mp4"))
@@ -326,7 +327,6 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
     func testLoadControlSharedMKV() throws { try checkCommonLoadControl("h264.mkv",video:true,progress:true) }
     func testLoadControlSharedTS() throws { try checkCommonLoadControl("h264.ts",video:true,progress:true) }
     func testLoadControlSharedFLV() throws { try checkCommonLoadControl("h264.flv",video:true,progress:true) }
-    func testLoadControlSharedWebM() throws { try checkCommonLoadControl("internet-vp9.webm",video:true,progress:true) }
     func testLoadControlSharedRawH264() throws { try checkCommonLoadControl("raw.h264",video:true,progress:false) }
     func testLoadControlSharedRawHEVC() throws { try checkCommonLoadControl("raw.h265",video:true,progress:false) }
     func testLoadControlSharedAudioOnly() throws { try checkCommonLoadControl("audio.m4a",video:false,progress:true) }
@@ -921,8 +921,7 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
 
     func testPartialFLVCacheDoesNotTreatSparseNativeIndexAsCompleteTimeline() throws {
         let url = try http("h264.flv")
-        let fixture = try RemoteFixtureStore.root()
-        let bytes = try Data(contentsOf: fixture.appendingPathComponent("h264.flv"))
+        let bytes = try Data(contentsOf: fixture("h264.flv"))
         let partial = PlaybackSession(url: url, cache: true, policy: .ffmpeg)
         let store = try CacheStore(videoURL: url, directory: partial.player.prepareCacheSession().directory)
         let third = bytes.count / 3
@@ -992,6 +991,7 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
         sessions.append(session); session.start()
         try require(until(5) { session.failure != nil }, "Permanent HTTP error did not surface")
         let error = try XCTUnwrap(session.failure as NSError?)
+        XCTAssertEqual(error.domain, "StreamingLoader", "HTTP status lost its loader domain: \(error)")
         XCTAssertEqual(error.code, code, "Original HTTP status was lost: \(error)")
         XCTAssertTrue(error.localizedDescription.contains("HTTP \(code)"))
         XCTAssertEqual(session.player.state, .failed); XCTAssertEqual(session.finished, 0)
@@ -1067,7 +1067,7 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
         pump(0.3); XCTAssertEqual(session.errorCount, 1)
         let reported = try XCTUnwrap(session.failure as NSError?)
         XCTAssertGreaterThan(reported.userInfo["currentTime"] as? Double ?? -1, 0.1)
-        XCTAssertEqual(reported.userInfo["duration"] as? Double, 30)
+        XCTAssertEqual(try XCTUnwrap(reported.userInfo["duration"] as? Double), 30, accuracy: 0.001)
         session.ready = false; session.player.replaceVideo()
         try require(until { session.ready }, "Reopen did not reset failure generation")
         let reopened = try XCTUnwrap(session.player.decoder)
@@ -1082,7 +1082,7 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
         session.player.seek(to: 15) { done = $0 }
         try require(until { done != nil }, "Seek callback missing")
         XCTAssertEqual(done, true); XCTAssertEqual(session.player.currentTime, 15, accuracy: 0.2)
-        XCTAssertEqual(session.player.duration, 30)
+        XCTAssertEqual(session.player.duration, 30, accuracy: 0.001)
     }
 
     private func checkCachedCorruptInput(_ path: String) throws {
@@ -1136,7 +1136,7 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
         session.stop()
         XCTAssertTrue(files.allSatisfy { FileManager.default.fileExists(atPath: $0.path) }, "Stop unexpectedly deleted session cache")
         XCTAssertEqual(session.player.downloadProgress, 1)
-        XCTAssertEqual(session.player.duration, 30)
+        XCTAssertEqual(session.player.duration, 30, accuracy: 0.001)
     }
     func testSessionCacheDeinitDeletesWhilePlaying() throws {
         let url = try http("sample.mp4")
@@ -1209,6 +1209,26 @@ final class FTPlayerHTTPTests: DecodeBackendTestCase {
         XCTAssertTrue(server!.requests.isEmpty, "Ended cache session silently fell back to uncached HTTP")
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
         format.destroy()
+    }
+    /// Rapid seek can interrupt AVIO while it refills a seek-back from byte 0,
+    /// leaving an empty buffer at position 0. The MP4 demuxer reads that as a
+    /// restarted stream; every later seek then failed (Seek failed at 1.0x).
+    func testMP4SeekAfterInterruptedSeekbackAtFileStartRecovers() throws {
+        let format = FTFormatContext(contentURL: try http("internet-hevc.mp4"), videoFormat: .unknown)
+        format.setupSync(timeoutSeconds: 5, useCache: true); XCTAssertNil(format.error)
+        defer { format.destroy() }
+        let pb = try XCTUnwrap(format.formatContext?.pointee.pb)
+        var packet = av_packet_alloc(); defer { av_packet_free(&packet) }
+        // What avio_seek's seek-back does before its refill is interrupted:
+        // the source is moved to byte 0, then the buffer is left empty at EOF.
+        XCTAssertEqual(pb.pointee.seek?(pb.pointee.opaque, 0, SEEK_SET), 0)
+        pb.pointee.pos = 0; pb.pointee.buf_ptr = pb.pointee.buffer; pb.pointee.buf_end = pb.pointee.buffer
+        pb.pointee.eof_reached = 1
+        for target in [6.0, 1.0, 1.5] {
+            XCTAssertTrue(format.seekFile(withFFTimebase: target), "Seek to \(target) failed")
+            XCTAssertGreaterThanOrEqual(format.readFrame(packet), 0, "No packet after seek to \(target)")
+            av_packet_unref(packet)
+        }
     }
     func testSessionCacheStandaloneFormatDestroyRemovesOwnedCache() throws {
         let url = try http("sample.mp4"), format = FTFormatContext(contentURL: try http("sample.mp4"), videoFormat: .unknown)

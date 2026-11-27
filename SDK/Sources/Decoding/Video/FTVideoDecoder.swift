@@ -314,7 +314,10 @@ class FTVideoDecoder {
                 let wallAhead = queuedDuration / max(1, Double(playbackRate))
                 let interval = paused ? max_video_frame_sleep_full_and_pause_time_interval
                     : min(max_video_frame_sleep_full_time_interval, max(FTPlayerSDKConfiguration.Video.minimumFullQueueSleep, wallAhead / FTPlayerSDKConfiguration.Video.fullQueueWallTimeDivisor))
-                Thread.sleep(forTimeInterval: interval)
+                // Wake as soon as a picture leaves the queue. At <= 1 fps two
+                // pictures fill the budget, and seek preroll discards each one
+                // within a display tick; a fixed sleep cost 100 ms per picture.
+                frameQueue.waitForRemoval(timeout: interval)
                 continue
             }
             // Keep the worker alive after draining EOF. A seek may arrive while EOF
@@ -767,7 +770,11 @@ class FTVideoDecoder {
 
         let videoFrame = framePool?.getUnuseFrame() as? FTAVYUVVideoFrame ?? FTAVYUVVideoFrame()
         videoFrame.setFrameData(frame, width: Int(frame.pointee.width), height: Int(frame.pointee.height))
-        videoFrame.position = Double(frame.pointee.best_effort_timestamp) * timebase
+        // Prefer the picture's own PTS. After one duplicate PTS, FFmpeg's
+        // best_effort_timestamp switches to pkt_dts, which belongs to a later
+        // packet when the decoder delays output (camera lost-IDR streams).
+        let pts = frame.pointee.pts
+        videoFrame.position = Double(pts != FT_AV_NOPTS_VALUE ? pts : frame.pointee.best_effort_timestamp) * timebase
 
         let rawDuration = frame.pointee.duration
         if rawDuration != 0 {

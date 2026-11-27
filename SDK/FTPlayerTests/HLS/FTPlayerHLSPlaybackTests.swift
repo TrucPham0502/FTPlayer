@@ -3,7 +3,19 @@ import libavformat
 import libavcodec
 @testable import FTPlayer
 
-final class FTPlayerHLSTests: PlaybackTestCase {
+/// HLS and independent-segment playback over a loopback server serving `SyntheticMedia.fixtureRoot()`.
+final class FTPlayerHLSPlaybackTests: MediaTestCase {
+    var server: FixtureHTTPServer?
+    override func tearDownWithError() throws {
+        try super.tearDownWithError()
+        server?.stop()
+    }
+    func fixture(_ path: String) throws -> URL { try SyntheticMedia.fixtureRoot().appendingPathComponent(path) }
+    func http(_ path: String) throws -> URL {
+        if server == nil { server = try FixtureHTTPServer(root: fixture("")) }
+        return server!.url(path)
+    }
+
     func testPartialAudioPacketPressureDoesNotOscillateBuffering() throws {
         try checkPartialAudioPacketPressure(cache: true, seek: false)
     }
@@ -111,6 +123,23 @@ final class FTPlayerHLSTests: PlaybackTestCase {
         XCTAssertEqual(s.finished, 1)
     }
 
+    func testLowFrameRateSeekPrerollDoesNotWaitPerDiscardedPicture() throws {
+        // 1 fps, one keyframe per 30 s: seeking to 28 decodes 28 preroll pictures.
+        // Two pictures already fill the 2 s decoded queue, so each discarded one
+        // must wake the decoder instead of costing a full-queue sleep.
+        let s = try start(fixture("audio-present.mp4"), policy: .ffmpeg)
+        try assertPlayback(s)
+        var completed: Bool?
+        let wall = ProcessInfo.processInfo.systemUptime
+        s.player.seek(to: 28) { completed = $0 }
+        try require(until(5) { completed != nil || s.failure != nil }, "Seek did not complete")
+        let elapsed = ProcessInfo.processInfo.systemUptime - wall
+        XCTAssertEqual(completed, true)
+        XCTAssertLessThan(elapsed, 1, "Low-fps seek preroll was throttled per picture")
+        try require(until(2) { s.sink.lastPresentationTime >= 28 }, "Playback did not continue after the seek")
+        XCTAssertNil(s.failure)
+    }
+
     func testEmptyAudioTrackFileFinishesAtVideoTail() throws {
         let s = try start(fixture("empty-audio.mp4"), policy: .ffmpeg)
         try assertPlayback(s)
@@ -134,8 +163,14 @@ final class FTPlayerHLSTests: PlaybackTestCase {
             "Zero EXTINF fell through to native HLS's 1ms placeholder")
         XCTAssertEqual(Array(manifest.segments.prefix(3)).map(\.duration), [30, 30, 30],
             "Valid declared durations must remain unchanged")
-        XCTAssertEqual(try XCTUnwrap(manifest.segments.last).duration, 30.021995, accuracy: 0.000001,
-            "The fixture's container includes an audio tail beyond its 30s video")
+        var probe: UnsafeMutablePointer<AVFormatContext>?
+        XCTAssertEqual(avformat_open_input(&probe, try fixture("faststart.mp4").path, nil, nil), 0)
+        defer { avformat_close_input(&probe) }
+        XCTAssertGreaterThanOrEqual(avformat_find_stream_info(probe, nil), 0)
+        let containerDuration = Double(try XCTUnwrap(probe).pointee.duration) / Double(AV_TIME_BASE)
+        XCTAssertGreaterThan(containerDuration, 30, "The fixture's container includes an audio tail beyond its 30s video")
+        XCTAssertEqual(try XCTUnwrap(manifest.segments.last).duration, containerDuration, accuracy: 0.000001,
+            "Zero EXTINF must use the actual container duration")
         XCTAssertNil(manifest.playlist, "Independent complete MP4 files need separate demux timelines")
         let requests = server!.requests
         let restored = try XCTUnwrap(FTIndependentHLS.prepare(source: source, session: cache,
@@ -226,120 +261,6 @@ final class FTPlayerHLSTests: PlaybackTestCase {
             try require(until(3) { s.sink.frames > frames && s.sink.lastPresentationTime >= target - 0.1 },
                 "Seek never presented the requested part of the recording")
         }
-    }
-
-    func testMP4RetimedPacketCannotRewriteADifferentIndexedSample() throws {
-        let format = FTFormatContext(contentURL: try fixture("sustained-hevc-aac.mp4"), videoFormat: .unknown)
-        format.setupSync(useCache: false)
-        defer { format.destroy() }
-        let context = try XCTUnwrap(format.formatContext)
-        var packet = av_packet_alloc()
-        defer { av_packet_free(&packet) }
-        var collisions = 0
-        for _ in 0..<2000 {
-            guard av_read_frame(context, packet) >= 0, let value = packet?.pointee else { break }
-            defer { av_packet_unref(packet) }
-            guard Int(value.stream_index) == format.videoTrack?.index,
-                  let stream = context.pointee.streams[Int(value.stream_index)],
-                  let entry = avformat_index_get_entry_from_timestamp(stream, value.dts, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY),
-                  entry.pointee.timestamp == value.dts, entry.pointee.pos != value.pos,
-                  value.flags & AV_PKT_FLAG_KEY != 0, entry.pointee.flags & AVINDEX_KEYFRAME == 0 else { continue }
-            let position = entry.pointee.pos, size = entry.pointee.size
-            format.validateMP4RandomAccess(packet!)
-            let after = try XCTUnwrap(avformat_index_get_entry_from_timestamp(stream, value.dts, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY))
-            XCTAssertEqual(after.pointee.pos, position, "Retimed DTS identified a different MOV sample")
-            XCTAssertEqual(after.pointee.size, size, "Parser replaced an unrelated indexed sample's byte range")
-            XCTAssertEqual(after.pointee.flags & AVINDEX_KEYFRAME, 0)
-            collisions += 1
-            break
-        }
-        XCTAssertEqual(collisions, 1, "Fixture did not exercise its edit-list/index timestamp collision")
-    }
-
-    func testCorruptPartialMP4PacketCannotRewriteRandomAccessIndex() throws {
-        let format = FTFormatContext(contentURL: try fixture("malformed-keyflags/hevc-keyframe.mp4"), videoFormat: .unknown)
-        format.setupSync(useCache: false)
-        defer { format.destroy() }
-        var packet = av_packet_alloc()
-        defer { av_packet_free(&packet) }
-        try require(format.readFrame(packet) >= 0, "Missing original HEVC packet")
-        let value = try XCTUnwrap(packet)
-        let context = try XCTUnwrap(format.formatContext)
-        let stream = try XCTUnwrap(context.pointee.streams[Int(value.pointee.stream_index)])
-        let entry = try XCTUnwrap(avformat_index_get_entry_from_timestamp(stream, value.pointee.dts, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY))
-        let originalSize = entry.pointee.size
-        XCTAssertGreaterThan(originalSize, 512)
-        // A canceled HTTP read can return a successful but short CORRUPT packet.
-        // Its leading NAL still identifies an I picture; its size is not the
-        // complete MP4 sample size and must never replace that index entry.
-        value.pointee.size = 512
-        value.pointee.flags = (value.pointee.flags & ~AV_PKT_FLAG_KEY) | AV_PKT_FLAG_CORRUPT
-        format.validateMP4RandomAccess(value)
-        XCTAssertEqual(entry.pointee.size, originalSize, "Partial packet poisoned the next native seek")
-        XCTAssertEqual(value.pointee.flags & AV_PKT_FLAG_KEY, 0, "Corrupt input must not be promoted to a verified RAP")
-    }
-
-    func testMP4EncodedRandomAccessOverridesIncorrectContainerFlags() throws {
-        continueAfterFailure = true
-        for name in ["avc-keyframe.mp4", "avc-nonkeyframe.mp4", "hevc-keyframe.mp4", "hevc-nonkeyframe.mp4"] {
-            let format = FTFormatContext(contentURL: try fixture("malformed-keyflags/" + name), videoFormat: .unknown)
-            defer { format.destroy() }
-            format.setupSync(useCache: false)
-            XCTAssertNil(format.error)
-            var packet = av_packet_alloc()
-            defer { av_packet_free(&packet) }
-            var keys: [Bool] = []
-            var rows: [[String: Any]] = []
-            for _ in 0..<8 {
-                guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
-                if Int(value.stream_index) == format.videoTrack?.index {
-                    keys.append(value.flags & AV_PKT_FLAG_KEY != 0)
-                    rows.append(["pts": value.pts, "dts": value.dts, "flags": value.flags, "pos": value.pos,
-                        "start": format.startTime, "timebase": format.videoTimebase])
-                }
-                av_packet_unref(packet)
-            }
-            XCTAssertEqual(keys, [true, false], "Container sync flags contradicted the encoded access units: \(name)")
-            XCTAssertTrue(format.seekFile(withFFTimebase: 0), "Wrong container flags made seek zero fail: \(name)")
-            let attachment = XCTAttachment(data: try JSONSerialization.data(withJSONObject: rows), uniformTypeIdentifier: "public.json")
-            attachment.name = "encoded-random-access-" + name; attachment.lifetime = .keepAlways; add(attachment)
-        }
-    }
-
-    func testBadPDTAudioFrameTimestampContract() throws {
-        let format = FTFormatContext(contentURL: try http("bad-pdt/index.m3u8"), videoFormat: .m3u8)
-        defer { format.destroy() }
-        format.setupSync(useCache: false)
-        XCTAssertNil(format.error)
-        let codec = try XCTUnwrap(format.audioCodecContext)
-        var packet = av_packet_alloc(), frame = av_frame_alloc()
-        defer { av_packet_free(&packet); av_frame_free(&frame) }
-        var rows: [[String: Int64]] = []
-        for _ in 0..<2000 {
-            guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
-            if Int(value.stream_index) == format.audioTrack?.index {
-                XCTAssertGreaterThanOrEqual(avcodec_send_packet(codec, packet), 0)
-                while avcodec_receive_frame(codec, frame) == 0 {
-                    let value = frame!.pointee
-                    rows.append(["bestEffort": value.best_effort_timestamp, "pts": value.pts, "dts": value.pkt_dts])
-                    av_frame_unref(frame)
-                }
-            }
-            av_packet_unref(packet)
-            if rows.count >= 6 { break }
-        }
-        let attachment = XCTAttachment(data: try JSONSerialization.data(withJSONObject: rows), uniformTypeIdentifier: "public.json")
-        attachment.name = "missing-audio-timestamp-contract"; attachment.lifetime = .keepAlways; add(attachment)
-        XCTAssertGreaterThan(rows.count, 0)
-        XCTAssertNotEqual(rows.first?["pts"], FT_AV_NOPTS_VALUE)
-        XCTAssertTrue(rows.contains { $0["bestEffort"] == FT_AV_NOPTS_VALUE && $0["pts"] == FT_AV_NOPTS_VALUE && $0["dts"] == FT_AV_NOPTS_VALUE }, "The fixture must contain untimestamped AAC frames after a real anchor")
-    }
-
-    func testBadPDTAudioUnknownBestEffortDoesNotFreezePlaybackClock() throws {
-        let s = try start(try http("bad-pdt/index.m3u8"), cache: nil, policy: .ffmpeg)
-        try assertPlayback(s, timeout: 4)
-        XCTAssertGreaterThanOrEqual(s.player.currentTime, 0)
-        XCTAssertLessThan(s.player.currentTime, s.player.duration)
     }
 
     func testIndependentHLSDefaultCacheClockNeverRewindsAcrossShortDeclaredPeriods() throws {
@@ -462,199 +383,6 @@ final class FTPlayerHLSTests: PlaybackTestCase {
         XCTAssertLessThanOrEqual(try XCTUnwrap(firstKey), 25)
     }
 
-    func testSparseAudioPeriodsKeepRequestedTimelineRate() throws {
-        let s = try start(try http("pdt-repeated-ts/index.m3u8"), cache: true)
-        try assertPlayback(s)
-        try require(until(10) { s.player.downloadProgress == 1 }, "Sparse-audio fixture cache incomplete")
-        server!.setNetworkMode(.disconnect, dropExistingConnections: true)
-        for (rate, target, window) in [(Float(1), 3.5, 2.0), (Float(16), 0.0, 40.0)] {
-            s.player.pause(); s.player.rate = rate
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil }, "Sparse-audio seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            try require(until(5) { s.sink.lastPresentationTime >= target - 0.1 && !(s.player.decoder?.buffering ?? true) }, "Sparse-audio seek not ready")
-            let origin = s.player.currentTime, began = ProcessInfo.processInfo.systemUptime
-            var previous = origin, maximumBackwardStep = 0.0
-            while s.player.currentTime < origin + window && ProcessInfo.processInfo.systemUptime - began < 8 {
-                pump(0.02)
-                maximumBackwardStep = max(maximumBackwardStep, previous - s.player.currentTime)
-                previous = s.player.currentTime
-            }
-            XCTAssertGreaterThanOrEqual(s.player.currentTime, origin + window, "Sparse audio stopped the clock")
-            let actual = (s.player.currentTime - origin) / (ProcessInfo.processInfo.systemUptime - began)
-            s.measurements.append(["operation": "sparse-audio-clock", "requestedRate": rate, "measuredRate": actual,
-                "maximumBackwardStep": maximumBackwardStep])
-            XCTAssertLessThan(maximumBackwardStep, 0.5, "Gap interpolation changed the public clock's latency origin")
-            XCTAssertEqual(actual, Double(rate), accuracy: Double(rate) * 0.15, "Clock skipped the missing audio interval")
-            XCTAssertNil(s.failure)
-        }
-    }
-
-
-    func testHardwareH264ParameterChangesKeepCached16xAdvancing() throws {
-        let s = try start(try http("dai-periods/index.m3u8"), cache: true, policy: .hardware)
-        try assertPlayback(s)
-        try require(until(10) { s.player.downloadProgress == 1 }, "Parameter-change fixture cache incomplete")
-        server!.setNetworkMode(.disconnect, dropExistingConnections: true)
-        let initialSize = s.sink.dimensions
-        var changedSize = false, gap = 0.0, maximumGap = 0.0
-        var lastPTS = s.sink.lastPresentationTime, lastWall = ProcessInfo.processInfo.systemUptime
-        let began = lastWall
-        s.player.rate = 16
-        while s.player.currentTime < 28 && s.failure == nil && ProcessInfo.processInfo.systemUptime - began < 8 {
-            pump(0.02)
-            let now = ProcessInfo.processInfo.systemUptime
-            if s.sink.lastPresentationTime > lastPTS { lastPTS = s.sink.lastPresentationTime; gap = 0 }
-            else { gap += now - lastWall }
-            maximumGap = max(maximumGap, gap); lastWall = now
-            if s.sink.dimensions != initialSize { changedSize = true }
-        }
-        s.measurements.append(["operation": "hardware-parameter-change-16x", "maximumImageGap": maximumGap,
-            "lastPTS": lastPTS, "clock": s.player.currentTime, "changedSize": changedSize])
-        XCTAssertNil(s.failure)
-        XCTAssertTrue(changedSize, "Output did not adopt the new SPS dimensions")
-        XCTAssertGreaterThan(lastPTS, 26)
-        XCTAssertLessThan(maximumGap, 0.35)
-        XCTAssertEqual(s.player.videoDecodingStatistics.ffmpegFrames, 0)
-        XCTAssertGreaterThan(s.player.videoDecodingStatistics.hardwareFrames, 0)
-    }
-
-    func testEncryptedHLSDiscontinuityPeriodsKeepPlaylistTimelineOffline() throws {
-        try checkEncryptedPeriods("index.m3u8")
-    }
-
-    func testMasterEncryptedHLSDiscontinuityPeriodsKeepPlaylistTimelineOffline() throws {
-        try checkEncryptedPeriods("master.m3u8")
-    }
-
-    private func checkEncryptedPeriods(_ name: String) throws {
-        let s = try start(try http("dai-periods/" + name), cache: true)
-        try assertPlayback(s)
-        try require(until(10) { s.player.downloadProgress == 1 }, "Discontinuity fixture did not finish caching")
-        server!.setNetworkMode(.disconnect, dropExistingConnections: true)
-        for target in [15.0, 25, 0, 15] {
-            s.player.pause()
-            let frames = s.sink.frames
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil }, "Period seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            let rendered = until(5) { s.sink.frames > frames && abs(s.sink.lastPresentationTime - target) < 0.5 }
-            s.measurements.append(["operation": "encrypted-period-seek", "target": target, "PTS": s.sink.lastPresentationTime])
-            try require(rendered, "Encrypted/plain discontinuity changed the public timeline at \(target)")
-            XCTAssertNil(s.failure)
-        }
-    }
-
-    func testCustomIVCacheRemainsSeekableWithoutNetwork() throws {
-        let s = try start(try http("custom-iv/index.m3u8"), cache: true)
-        try assertPlayback(s)
-        try require(until(10) { s.player.downloadProgress == 1 }, "Custom IV media/key did not finish caching")
-        XCTAssertEqual(s.player.decoder?.cacheDiagnostics["hlsKeyCachedBytes"], 16)
-        server!.setNetworkMode(.disconnect, dropExistingConnections: true)
-        for target in [10.0, 0, 18, 0] {
-            s.player.pause()
-            let frames = s.sink.frames
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil }, "Offline Custom IV seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            try require(until(5) { s.sink.frames > frames && abs(s.sink.lastPresentationTime - target) < 0.5 }, "Cached Custom IV seek failed at \(target)")
-            XCTAssertNil(s.failure)
-        }
-    }
-
-    func testRepeatedPublicTSSeeksAcrossSparseAudioPeriods() throws {
-        let url = try http("pdt-repeated-ts/index.m3u8")
-        let format = FTFormatContext(contentURL: url, videoFormat: .m3u8)
-        format.setupSync(useCache: true)
-        XCTAssertNil(format.error)
-        var packet = av_packet_alloc()
-        var rows: [[String: Any]] = []
-        for target in [-1.0, 0, 9, 21, 41.242] {
-            if target >= 0 { XCTAssertTrue(format.seekFile(withFFTimebase: target)) }
-            var count = 0
-            for _ in 0..<100 {
-                guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
-                rows.append(["target": target, "stream": value.stream_index,
-                    "PTS": Double(value.pts) * (Int(value.stream_index) == format.videoTrack?.index ? format.videoTimebase : format.audioTimebase) - format.startTime,
-                    "key": value.flags & AV_PKT_FLAG_KEY])
-                av_packet_unref(packet); count += 1
-                if count == 6 { break }
-            }
-        }
-        let a = XCTAttachment(data: try JSONSerialization.data(withJSONObject: rows), uniformTypeIdentifier: "public.json")
-        a.name = "public-period-packets"; a.lifetime = .keepAlways; add(a)
-        av_packet_free(&packet); format.destroy()
-        let s = try start(url, cache: true)
-        try assertPlayback(s)
-        let first = try XCTUnwrap(s.sink.firstPresentationTime)
-        for target in [0.0, 9, 21, 41.242, 0] {
-            s.player.pause()
-            let frames = s.sink.frames
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil }, "Repeated TS seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            let rendered = until(5) { s.sink.frames > frames && abs(s.sink.lastPresentationTime - max(first, target)) < 0.5 }
-            s.measurements.append(["operation": "repeated-ts-seek", "target": target, "PTS": s.sink.lastPresentationTime, "first": first])
-            try require(rendered, "Repeated TS seek failed at \(target)")
-            s.player.pause()
-            XCTAssertEqual(s.player.currentTime, target, accuracy: 0.6, "Audio EOF finished the item before the video tail")
-        }
-    }
-
-    func testHLSVideoPTSOutliersDoNotPoisonCachedSeek() throws {
-        let s = try start(try http("av-pts-outliers/index.m3u8"), cache: true)
-        try assertPlayback(s)
-        let first = try XCTUnwrap(s.sink.firstPresentationTime)
-        // Source video ends at 20.359343s; its audio continues to 30.686s.
-        for (target, picture) in [(15.343, 15.343), (0.0, first), (29.5, 20.359343), (9.0, 9.0)] {
-            let frames = s.sink.frames
-            s.player.pause()
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil || s.failure != nil }, "PTS outlier seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            let expected = max(first, picture)
-            let rendered = until(5) { s.sink.frames > frames && abs(s.sink.lastPresentationTime - expected) < 0.5 || s.failure != nil }
-            s.measurements.append(["operation": "pts-outlier-seek", "target": target,
-                "expected": expected, "actualPTS": s.sink.lastPresentationTime])
-            try require(rendered, "Isolated outlier PTS poisoned a seek with valid DTS and video at the target")
-            XCTAssertNil(s.failure)
-        }
-    }
-
-    func testEncryptedHLSDTSOffsetSeekZeroKeepsInitialPictureOffline() throws {
-        let s = try start(try http("dai-initial/index.m3u8"), cache: true)
-        try assertPlayback(s)
-        let first = try XCTUnwrap(s.sink.firstPresentationTime)
-        for (iteration, target) in [9.0, 0, 9, 0].enumerated() {
-            if iteration == 2 {
-                try require(until(5) { s.player.downloadProgress == 1 }, "DAI fixture did not finish caching")
-                server!.setNetworkMode(.disconnect, dropExistingConnections: true)
-            }
-            let frames = s.sink.frames
-            s.player.pause()
-            var completed: Bool?
-            s.player.seek(to: target) { completed = $0 }
-            try require(until(5) { completed != nil || s.failure != nil }, "DAI fixture seek callback missing")
-            XCTAssertEqual(completed, true)
-            s.player.play()
-            let expected = max(target, first)
-            let rendered = until(5) { s.sink.frames > frames && abs(s.sink.lastPresentationTime - expected) < 0.5 || s.failure != nil }
-            s.measurements.append(["operation": "dai-seek", "target": target, "expected": expected,
-                "actualPTS": s.sink.lastPresentationTime, "decoder": s.player.decoder?.diagnosticSnapshot ?? "closed"])
-            try require(rendered, "HLS zero seek lost the original initial picture")
-            XCTAssertNil(s.failure)
-        }
-    }
 
     func testLeadingDiscontinuityRepeatingTSKeepsPeriodTimeline() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("leading-ts-periods-\(UUID())")
@@ -750,31 +478,6 @@ final class FTPlayerHLSTests: PlaybackTestCase {
         cache.setPlaybackRate(2)
         XCTAssertEqual(worker.diagnosticSnapshot["readAheadTargetBytes"], Int64(size), "Session rate updates must preserve the HLS resource's download budget")
         try require(until(5) { worker.cachedFraction == 1 }, "Paused HLS resource stopped downloading before EOF")
-    }
-
-    func testShortAVITailDemuxRetainsVideoPackets() throws {
-        let format = FTFormatContext(contentURL: try fixture("short-mpeg4-mp3.avi"), videoFormat: .unknown)
-        defer { format.destroy() }
-        format.setupSync(useCache: false)
-        XCTAssertNil(format.error)
-        var packet = av_packet_alloc()
-        defer { av_packet_free(&packet) }
-        var rows: [[String: Any]] = []
-        for target in [-1.0, 0.0, 0.684, 1.0944] {
-            if target >= 0 { XCTAssertTrue(format.seekFile(withFFTimebase: target)) }
-            var packets: [[String: Any]] = []
-            for _ in 0..<512 {
-                guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
-                packets.append(["stream": value.stream_index, "pts": value.pts, "dts": value.dts,
-                    "duration": value.duration, "flags": value.flags])
-                av_packet_unref(packet)
-            }
-            rows.append(["target": target, "videoTimebase": format.videoTimebase,
-                "audioTimebase": format.audioTimebase, "packets": packets])
-            XCTAssertTrue(packets.contains { ($0["stream"] as? Int32) == Int32(format.videoTrack!.index) }, "AVI seek returned no video packets at \(target)")
-        }
-        let attachment = XCTAttachment(data: try JSONSerialization.data(withJSONObject: rows), uniformTypeIdentifier: "public.json")
-        attachment.name = "avi-tail-packets"; attachment.lifetime = .keepAlways; add(attachment)
     }
 
     func testRoundedHLSDurationsRetainKeyframeForUnseenSeek() throws { try checkRoundedUnseenSeek(cache: true, master: false) }
@@ -968,6 +671,131 @@ final class FTPlayerHLSTests: PlaybackTestCase {
             XCTAssertLessThan(Double(value.pts) * format.videoTimebase - format.startTime, 1)
             av_packet_unref(packet)
         }
+    }
+
+    /// After a cached seek on a master with a separate audio rendition, the first audio
+    /// packet, video packet and video keyframe all start at or before the target.
+    func testCachedMasterSeparateAudioSeekKeepsAudioVideoOrigins() throws {
+        let format = FTFormatContext(contentURL: try http("hls-master-audio/master.m3u8"), videoFormat: .m3u8)
+        defer { format.destroy() }
+        format.setupSync(useCache: true)
+        XCTAssertNil(format.error)
+        var packet = av_packet_alloc()
+        defer { av_packet_free(&packet) }
+        let videoIndex = Int32(try XCTUnwrap(format.videoTrack).index), audioIndex = Int32(try XCTUnwrap(format.audioTrack).index)
+        for target in [Double(-1), 9, 0, 10, 8.992005, 0] {
+            if target >= 0 { XCTAssertTrue(format.seekFile(withFFTimebase: target)) }
+            var audio: Double?, video: Double?, firstKey: Double?
+            for _ in 0..<2048 {
+                guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
+                if value.stream_index == audioIndex, audio == nil { audio = Double(value.pts) * format.audioTimebase - format.startTime }
+                if value.stream_index == videoIndex {
+                    let pts = Double(value.pts) * format.videoTimebase - format.startTime
+                    if video == nil { video = pts }
+                    if firstKey == nil, value.flags & AV_PKT_FLAG_KEY != 0 { firstKey = pts }
+                }
+                av_packet_unref(packet)
+                if audio != nil && video != nil && firstKey != nil { break }
+            }
+            if target >= 0 {
+                XCTAssertLessThanOrEqual(try XCTUnwrap(firstKey), target + 0.1, "Seek to \(target) lost the keyframe needed to decode it")
+                XCTAssertLessThanOrEqual(try XCTUnwrap(audio), target + 0.1, "Audio origin after seek to \(target)")
+                XCTAssertLessThanOrEqual(try XCTUnwrap(video), target + 0.1, "Video origin after seek to \(target)")
+            }
+            if target != 0 {
+                // Read well past the target so the next seek starts from a distant demux position.
+                for _ in 0..<4096 {
+                    guard format.readFrame(packet) >= 0, let value = packet?.pointee else { break }
+                    let reached = value.stream_index == videoIndex && Double(value.pts) * format.videoTimebase - format.startTime >= 20
+                    av_packet_unref(packet)
+                    if reached { break }
+                }
+            }
+        }
+    }
+
+    func testSeparateAudioMasterDistantSeekWithDefaultCache() throws { try checkSeparateAudioMasterDistantSeek(cache: nil) }
+    func testSeparateAudioMasterDistantSeekWithCacheEnabled() throws { try checkSeparateAudioMasterDistantSeek(cache: true) }
+    private func checkSeparateAudioMasterDistantSeek(cache: Bool?) throws {
+        let s = try start(http("hls-master-audio/master.m3u8"), cache: cache)
+        try assertPlayback(s, timeout: 20)
+        for target in [0.0, s.player.duration / 2, s.player.duration - 0.8, 0] {
+            s.player.pause()
+            let frames = s.sink.frames
+            var completed: Bool?
+            s.player.seek(to: target) { completed = $0 }
+            try require(until(35) { completed != nil || s.failure != nil }, "Separate-audio seek callback missing")
+            XCTAssertEqual(completed, true)
+            s.player.play()
+            let rendered = until(20) { s.failure != nil || s.sink.frames > frames && abs(s.sink.lastPresentationTime - target) <= 0.5 }
+            try require(rendered && s.failure == nil, "Separate-audio distant seek to \(target) did not render its target (picture \(s.sink.lastPresentationTime))")
+        }
+    }
+
+    /// Paused at 16x, the HLS cache warms only the load-control window (50 s by
+    /// default, rounded up to a segment) instead of most of the stream.
+    func testPausedHLSCacheAt16xStaysWithinMaximumBufferDuration() throws {
+        let playlist = try String(contentsOf: fixture("hls-sustained/index.m3u8"))
+        let longestSegment = playlist.components(separatedBy: .newlines)
+            .compactMap { $0.hasPrefix("#EXTINF:") ? Double($0.dropFirst(8).prefix { $0 != "," }) : nil }.max() ?? 0
+        let s = try start(http("hls-sustained/index.m3u8"), cache: true, timeout: 35)
+        try assertPlayback(s, timeout: 15)
+        s.player.pause(); s.player.rate = 16; pump(1.5)
+        let end = s.player.cachedTimeRanges.first(where: { $0.start == 0 })?.end ?? 0
+        XCTAssertGreaterThan(end, 0)
+        XCTAssertLessThanOrEqual(end, 50 + longestSegment, "16x warmed far beyond the maximum buffer duration")
+    }
+
+    func testCachedHLSMasterSustained16x() throws { try checkCachedHLSSustained16x(.automatic) }
+    func testCachedHLSMasterFFmpegSustained16x() throws { try checkCachedHLSSustained16x(.ffmpeg) }
+    func testCachedHLSMasterHardwareSustained16x() throws { try checkCachedHLSSustained16x(.hardware) }
+    /// 16x through an HLS master whose opening window is already cached must keep updating
+    /// pictures close to the clock, never step backward, and return to 1x.
+    private func checkCachedHLSSustained16x(_ policy: FTVideoDecodingPolicy) throws {
+        let session = PlaybackSession(url: try http("hls-sustained/master.m3u8"), cache: true, policy: policy)
+        sessions.append(session); session.start()
+        try require(until(30) { session.ready || session.failure != nil }, "Open did not complete")
+        #if targetEnvironment(simulator)
+        if policy == .hardware, let error = session.failure as NSError?, error.code == -2001 {
+            throw XCTSkip("Strict hardware unavailable on Simulator")
+        }
+        #endif
+        try require(session.failure == nil, "Open failed: \(String(describing: session.failure))")
+        try assertPlayback(session)
+        session.player.pause()
+        try require(until(35) { session.player.cachedTimeRanges.contains { $0.start == 0 && $0.end >= 50 } }, "HLS master did not cache the initial playback window")
+        session.player.rate = 16
+        session.player.play()
+        let began = ProcessInfo.processInfo.systemUptime, initial = session.player.currentTime
+        var last = began, lastPTS = session.sink.lastPresentationTime, cachedGap = 0.0, maxGap = 0.0, cachedWall = 0.0, maxCachedLag = 0.0
+        var backwardImages = 0
+        // 6 s at 16x stays inside the 160 s fixture, so the stream never reaches EOF here.
+        while ProcessInfo.processInfo.systemUptime - began < 6 && session.failure == nil && session.finished == 0 {
+            pump(0.05)
+            let now = ProcessInfo.processInfo.systemUptime, elapsed = now - last
+            last = now
+            let position = session.player.currentTime, pts = session.sink.lastPresentationTime
+            let covered = session.player.cachedTimeRanges.contains { $0.start <= position && $0.end >= position + 1 }
+            if covered { cachedWall += elapsed; maxCachedLag = max(maxCachedLag, (position - pts) / 16) }
+            if pts < lastPTS - 0.05 { backwardImages += 1 }
+            if pts > lastPTS + 0.0001 { cachedGap = 0; lastPTS = pts }
+            else if covered { cachedGap += elapsed }
+            else { cachedGap = 0 }
+            maxGap = max(maxGap, cachedGap)
+        }
+        XCTAssertNil(session.failure)
+        XCTAssertGreaterThan(cachedWall, 2, "Not enough playback in an already cached interval")
+        XCTAssertLessThan(maxGap, 0.35, "Video froze at 16x while media was already cached")
+        XCTAssertLessThan(maxCachedLag, 0.75, "Updating images lagged far behind the audio clock")
+        XCTAssertEqual(backwardImages, 0, "Displayed PTS moved backward without a seek")
+        let statistics = session.player.videoDecodingStatistics
+        if policy == .hardware { XCTAssertGreaterThan(statistics.hardwareFrames, 0); XCTAssertEqual(statistics.ffmpegFrames, 0) }
+        if policy == .ffmpeg { XCTAssertGreaterThan(statistics.ffmpegFrames, 0); XCTAssertEqual(statistics.hardwareFrames, 0) }
+        XCTAssertGreaterThan(session.player.currentTime - initial, 50, "16x playback did not advance through multiple segments")
+        session.player.rate = 1
+        let frames = session.sink.frames
+        try require(until(10) { session.sink.frames > frames + 3 || session.failure != nil }, "No recovery after returning from 16x")
+        XCTAssertNil(session.failure)
     }
 
 

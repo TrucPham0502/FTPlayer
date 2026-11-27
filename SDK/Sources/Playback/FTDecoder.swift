@@ -172,7 +172,13 @@ class FTDecoder: NSObject {
                   playbackFinished else {
                 return
             }
-            progress = duration
+            // The clock may already have clamped progress to duration while its
+            // notification was throttled; the end position must still be published.
+            if progress == duration {
+                delegate?.decoder(self, didChangeValueOfProgress: progress)
+            } else {
+                progress = duration
+            }
             delegate?.decoderDidPlaybackFinished(self)
             checkBufferingStatus()
         }
@@ -568,6 +574,9 @@ class FTDecoder: NSObject {
             let packetSize = (videoDecoder?.packetSize() ?? 0)
             // Common to local/progressive/HLS/native inputs. Disk read-ahead is
             // separate; retain the existing decoder RAM safety limit as well.
+            // Video-only buffer otherwise refreshes only on packet input, so a reader
+            // stopped at the load target would wait for an empty queue (a rebuffer).
+            updateBufferedDurationByVideo()
             let keepLoading = loadControlLock.withLock { packetLoadControl.shouldLoad(mediaAhead:bufferedDuration,bytesAhead:Int64(size+packetSize),rate:playbackRate) }
             if !keepLoading || size + packetSize >= Self.packetBufferLimit {
                 packetCapacityLimited = true
@@ -748,7 +757,10 @@ class FTDecoder: NSObject {
             let frameDur = frame.duration > 0 ? frame.duration : (1.0 / decoder.fps)
             let earlyGap = frame.position - clockTime
             let lag = clockTime - (frame.position + frameDur)
-            if earlyGap > FTPlayerSDKConfiguration.Playback.earlyFrameDurationFraction * frameDur { return }
+            // Half a frame rounds to the nearest display tick; a sparse 1 s still must not appear 0.5 s early.
+            let earlyLimit = min(FTPlayerSDKConfiguration.Playback.earlyFrameDurationFraction * frameDur,
+                                 FTPlayerSDKConfiguration.Playback.maximumEarlyFrameLead)
+            if earlyGap > earlyLimit { return }
             if playbackRate >= FTPlayerSDKConfiguration.Video.samplingRateThreshold || lag > dropThresh {
                 guard let frame = decoder.getFrameAsync() else { continue }
                 if playbackRate >= FTPlayerSDKConfiguration.Video.samplingRateThreshold {
@@ -904,6 +916,10 @@ class FTDecoder: NSObject {
         waitingForNetworkVideo = false
         // Resume must not replace an accepted explicit seek with replay at zero.
         playbackFinished = false
+        // Pause the codec before publishing the request: once enqueued, the read
+        // thread may take it and unpause first, and a later pause would stick.
+        videoDecoder?.presentationTime = nil
+        videoDecoder?.paused = true
         let target = seekController.enqueue(time: time, minimum: 0, duration: duration,
                                             completion: completeHandler)
         FTPlayerDiagnostic.shared.record("info", "rate", "engine seek accepted", fields: [
@@ -913,8 +929,6 @@ class FTDecoder: NSObject {
         lastAudioEnd = target
         formatContext?.cancelPendingReads()
         self.progress = target
-        videoDecoder?.presentationTime = nil
-        videoDecoder?.paused = true
         if endOfFile {
             setupReadPacketOperation()
         }
@@ -943,10 +957,7 @@ class FTDecoder: NSObject {
                     continue
                 }
             }
-            let gapThreshold = max(FTPlayerSDKConfiguration.Playback.minimumAudioGap, frame.duration * FTPlayerSDKConfiguration.Playback.audioGapDurationMultiplier)
-            if frame.position > lastAudioEnd + gapThreshold,
-               let clock = playbackClock as? FTAudioMasterClock,
-               clock.consumptionTime < frame.position {
+            if isHeldUntilDue(frame), let clock = playbackClock as? FTAudioMasterClock {
                 // Return silence while preserving the clock's interpolation.
                 // Keep future PCM queued until its timestamp is actually due.
                 let position = min(duration, max(progress, clock.consumptionTime))
@@ -1096,9 +1107,28 @@ class FTDecoder: NSObject {
     }
 
     private var audioGapClockActive: Bool {
+        formatContext?.audioEnable == true && currentAudioFrame == nil &&
+            audioDecoder?.isEmpty() == true && videoCanBridgeAudioGap
+    }
+
+    /// PCM after an audio gap stays queued until the clock reaches it (fetchAudioFrame).
+    private func isHeldUntilDue(_ frame: FTAudioFrame) -> Bool {
+        let gapThreshold = max(FTPlayerSDKConfiguration.Playback.minimumAudioGap, frame.duration * FTPlayerSDKConfiguration.Playback.audioGapDurationMultiplier)
+        guard frame.position > lastAudioEnd + gapThreshold, let clock = playbackClock as? FTAudioMasterClock else { return false }
+        return clock.consumptionTime < frame.position
+    }
+
+    /// The read-ahead decodes an event's first PCM long before it is due. Until then
+    /// video still bridges the gap, so that PCM must not count as the playback buffer.
+    private var videoBuffersAudioGap: Bool {
+        if audioGapClockActive { return true }
         guard formatContext?.audioEnable == true, currentAudioFrame == nil,
-              audioDecoder?.isEmpty() == true, let videoDecoder,
-              videoDecoder.peekFrame() != nil else { return false }
+              let frame = audioDecoder?.peekFrame(), isHeldUntilDue(frame) else { return false }
+        return videoCanBridgeAudioGap
+    }
+
+    private var videoCanBridgeAudioGap: Bool {
+        guard let videoDecoder, videoDecoder.peekFrame() != nil else { return false }
         // Metadata alone does not guarantee PCM. Only ready video with enough
         // buffered media can bridge a gap. EOF/packet pressure also allow ready
         // video to drain; network/video starvation still buffers normally.
@@ -1153,14 +1183,14 @@ class FTDecoder: NSObject {
     }
 
     private func updateBufferedDurationByVideo() {
-        if formatContext?.audioEnable == false || audioGapClockActive {
+        if formatContext?.audioEnable == false || videoBuffersAudioGap {
             bufferedDuration = videoDecoder?.duration() ?? 0.0
         }
     }
 
     private func updateBufferedDurationByAudio() {
         if formatContext?.audioEnable == true {
-            bufferedDuration = audioGapClockActive ? videoDecoder?.duration() ?? 0 : audioDecoder?.duration() ?? 0
+            bufferedDuration = videoBuffersAudioGap ? videoDecoder?.duration() ?? 0 : audioDecoder?.duration() ?? 0
         }
     }
 

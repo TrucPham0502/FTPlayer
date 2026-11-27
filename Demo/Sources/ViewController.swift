@@ -116,17 +116,14 @@ final class TestStreamPickerViewController: UITableViewController, UISearchResul
         title = "Link test (\(streams.count))"
         navigationItem.largeTitleDisplayMode = .never
         let close = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(closePicker))
-        close.accessibilityIdentifier = "testStreams.close"
         navigationItem.rightBarButtonItem = close
         search.searchResultsUpdater = self
         search.obscuresBackgroundDuringPresentation = false
         search.hidesNavigationBarDuringPresentation = false
         search.searchBar.placeholder = "Tìm tên, H.265, HLS, 4K…"
-        search.searchBar.accessibilityIdentifier = "testStreams.search"
         navigationItem.searchController = search
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
-        tableView.accessibilityIdentifier = "testStreams.list"
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
         tableView.keyboardDismissMode = .onDrag
@@ -176,7 +173,6 @@ final class TestStreamPickerViewController: UITableViewController, UISearchResul
         cell.detailTextLabel?.numberOfLines = 0
         cell.detailTextLabel?.adjustsFontForContentSizeCategory = true
         cell.accessoryType = .disclosureIndicator
-        cell.accessibilityIdentifier = "testStreams.\(stream.id)"
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -247,9 +243,7 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Chi tiết video"
-        progressLabel.accessibilityIdentifier = "playback.time"
         progressLabel.numberOfLines = 0
-        status.accessibilityIdentifier = "playback.status"
         view.backgroundColor = .systemBackground
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -258,7 +252,6 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         let title = UILabel()
         title.text = "FTPlayer SDK Demo"
         title.font = .boldSystemFont(ofSize: 24)
-        frameRateLabel.accessibilityIdentifier = "playback.fps"
         frameRateLabel.font = .monospacedDigitSystemFont(ofSize: 13, weight: .medium)
         frameRateLabel.numberOfLines = 0
         frameRateLabel.textColor = .systemTeal
@@ -275,7 +268,6 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         status.text = "Nhập URL hoặc chọn video trong Files"
         status.numberOfLines = 0
         status.font = .systemFont(ofSize: 14)
-        errorLogView.accessibilityIdentifier = "playback.errorLog"
         errorLogView.isEditable = false
         errorLogView.isSelectable = true
         errorLogView.isHidden = true
@@ -287,26 +279,19 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         errorHeight.isActive = true
         progressLabel.font = .monospacedDigitSystemFont(ofSize: 13, weight: .regular)
         progressLabel.text = "0.0 / 0.0 s"
-        preparationLabel.accessibilityIdentifier = "preparation.label"
         preparationLabel.text = "Chuẩn bị video: 0% • Chưa mở video"
         preparationLabel.font = .monospacedDigitSystemFont(ofSize: 13, weight: .medium)
         preparationLabel.numberOfLines = 0
-        preparationBar.accessibilityIdentifier = "preparation.progress"
         preparationBar.progressTintColor = .systemOrange
-        preparationHistoryView.accessibilityIdentifier = "preparation.history"
         preparationHistoryView.isEditable = false
         preparationHistoryView.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
         preparationHistoryView.backgroundColor = .secondarySystemBackground
         preparationHistoryView.heightAnchor.constraint(equalToConstant: 160).isActive = true
         preparationHistoryView.text = "Chi tiết chuẩn bị sẽ hiển thị ở đây. % do demo tự quy định."
-        mediaInfoLabel.accessibilityIdentifier = "media.info"
         mediaInfoLabel.text = "Thông tin video: chưa có"
         mediaInfoLabel.numberOfLines = 0
         mediaInfoLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         mediaInfoLabel.textColor = .secondaryLabel
-        buffer.accessibilityIdentifier = "playback.buffer"
-        cacheProgress.accessibilityIdentifier = "cache.progress"
-        cacheProgressLabel.accessibilityIdentifier = "cache.progress.label"
         cacheProgressLabel.text = "Cache đã tải: 0.0%"
         cacheProgressLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         cacheProgressLabel.numberOfLines = 0
@@ -317,7 +302,6 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         playButton.addTarget(self, action: #selector(togglePlay), for: .touchUpInside)
         muted = CommandLine.arguments.contains("--mute")
         muteButton.addTarget(self, action: #selector(toggleMute), for: .touchUpInside)
-        muteButton.accessibilityIdentifier = "audio.mute"
         muteButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
         updateMuteButton()
         rateSelector.selectedSegmentIndex = 1
@@ -335,7 +319,6 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         cacheLabel.font = .systemFont(ofSize: 13)
         cacheSwitch.isOn = true
         let testStreamsButton = button("Link test", #selector(chooseTestStream))
-        testStreamsButton.accessibilityIdentifier = "testStreams.open"
         let openRow = row([button("Mở URL", #selector(openURL)), button("Chọn file", #selector(chooseFile)), button("Video mẫu", #selector(openSample)), testStreamsButton])
         let controls = row([button("−10s", #selector(backward)), playButton, button("+10s", #selector(forward))])
         let audioControls = row([muteButton, button("Stop", #selector(stop))])
@@ -545,17 +528,14 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
         let title = UILabel()
         title.text = "AOV thông minh"
         title.font = .systemFont(ofSize: 13, weight: .semibold)
-        aovSwitch.accessibilityIdentifier = "aov.enabled"
         aovSwitch.isOn = aov.policy.isEnabled
         aovSwitch.addTarget(self, action: #selector(aovToggled), for: .valueChanged)
-        aovSource.accessibilityIdentifier = "aov.source"
         aovSource.selectedSegmentIndex = aov.policy.source.rawValue
         aovSource.addTarget(self, action: #selector(aovSourceChanged), for: .valueChanged)
         let done = UIToolbar(); done.sizeToFit()
         done.items = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                       UIBarButtonItem(title: "Xong", style: .done, target: self, action: #selector(endAOVEditing))]
-        func field(_ field: UITextField, id: String, caption: String) -> UIStackView {
-            field.accessibilityIdentifier = id
+        func field(_ field: UITextField, caption: String) -> UIStackView {
             field.borderStyle = .roundedRect
             field.keyboardType = .decimalPad
             field.inputAccessoryView = done
@@ -566,11 +546,10 @@ final class ViewController: UIViewController, UIDocumentPickerDelegate, FTPlayer
             label.font = .systemFont(ofSize: 12)
             return row([label, field])
         }
-        let fields = UIStackView(arrangedSubviews: [field(aovThresholdField, id: "aov.threshold", caption: "Ngưỡng ≤"),
-                                                    field(aovLowRateField, id: "aov.lowRate", caption: "Khi thấp ×"),
-                                                    field(aovNormalRateField, id: "aov.normalRate", caption: "Thường ×")])
+        let fields = UIStackView(arrangedSubviews: [field(aovThresholdField, caption: "Ngưỡng ≤"),
+                                                    field(aovLowRateField, caption: "Khi thấp ×"),
+                                                    field(aovNormalRateField, caption: "Thường ×")])
         fields.distribution = .equalSpacing
-        aovStatusLabel.accessibilityIdentifier = "aov.status"
         aovStatusLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         aovStatusLabel.numberOfLines = 0
         aovStatusLabel.textColor = .secondaryLabel

@@ -123,6 +123,18 @@
 		F941E8F3072D14B6BB3CDEA9 /* FTPlayerLoadControlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EB8CD96D0D4D72E832B89B /* FTPlayerLoadControlConfiguration.swift */; };
 		FB6558D615227F512CFE43AA /* FTHLSMasterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE84CA76A58FBB44CED03A2A /* FTHLSMasterCache.swift */; };
 		FE026EE390743A86D8F7A187 /* libavutil.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04E30FA6C827E713692BBCA9 /* libavutil.xcframework */; };
+		52E9158019FBDF4E6E43EC63 /* SyntheticMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8244A3BA9D5FDE6817BC16 /* SyntheticMedia.swift */; };
+		D58313A168372768E5FC9E75 /* MediaTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E03AE8EF34475C406376007 /* MediaTestCase.swift */; };
+		0F49B7EACE285A50A02F0ECF /* FTPlayerMuteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB0669B984C2E1E893F21E7 /* FTPlayerMuteTests.swift */; };
+		8C1675DF20F7890200E89DA3 /* FTPlayerCapturedMediaRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8303F39AA993B371E03D814E /* FTPlayerCapturedMediaRegressionTests.swift */; };
+		5346A9599699DC50D90ABFB0 /* FixtureHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6BF6944650D086097A50E3 /* FixtureHTTPServer.swift */; };
+		4F77501CA65A0240218C487E /* SyntheticFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED910440A0CA547237B1040 /* SyntheticFixtures.swift */; };
+		1A0F70AC7449ED19208D2681 /* FTPlayerHLSPlaybackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C029C56FDD7004E44150618E /* FTPlayerHLSPlaybackTests.swift */; };
+		571A9C4A1DFE71726A8296C9 /* DecodeBackendTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D310BED170C4ABBF19B3BD /* DecodeBackendTestCase.swift */; };
+		4C45114F7797410331AA5693 /* FTPlayerHTTPPlaybackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502A9CD7ACE2EBA64BF9AD93 /* FTPlayerHTTPPlaybackTests.swift */; };
+		B638BE9A9792C2123C1627BB /* FTPlayerControlPlaybackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FD5A8E59E324EECBBD6EDE /* FTPlayerControlPlaybackTests.swift */; };
+		0A7BBD59FD4FD781FC96C8CC /* FTPlayerDecodeBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDAEB98E6F6B7E4A3D1EF60 /* FTPlayerDecodeBackendTests.swift */; };
+		0B7E74455BAFD417C1C57F07 /* FTPlayerSeekRateControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC17CDC7314BE4172183A3F9 /* FTPlayerSeekRateControlTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -262,6 +274,18 @@
 		F55418187496655635A7784D /* FTPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTPlayer.h; sourceTree = "<group>"; };
 		FCD5BBF3C581548B01197E07 /* FTHEVCVideoToolBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTHEVCVideoToolBox.swift; sourceTree = "<group>"; };
 		FD029BE72C627E539E3A3AE1 /* FTCacheIOContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTCacheIOContext.swift; sourceTree = "<group>"; };
+		FC8244A3BA9D5FDE6817BC16 /* SyntheticMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticMedia.swift; sourceTree = "<group>"; };
+		7E03AE8EF34475C406376007 /* MediaTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTestCase.swift; sourceTree = "<group>"; };
+		9DB0669B984C2E1E893F21E7 /* FTPlayerMuteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerMuteTests.swift; sourceTree = "<group>"; };
+		8303F39AA993B371E03D814E /* FTPlayerCapturedMediaRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerCapturedMediaRegressionTests.swift; sourceTree = "<group>"; };
+		4D6BF6944650D086097A50E3 /* FixtureHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureHTTPServer.swift; sourceTree = "<group>"; };
+		8ED910440A0CA547237B1040 /* SyntheticFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticFixtures.swift; sourceTree = "<group>"; };
+		C029C56FDD7004E44150618E /* FTPlayerHLSPlaybackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHLSPlaybackTests.swift; sourceTree = "<group>"; };
+		68D310BED170C4ABBF19B3BD /* DecodeBackendTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeBackendTestCase.swift; sourceTree = "<group>"; };
+		502A9CD7ACE2EBA64BF9AD93 /* FTPlayerHTTPPlaybackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerHTTPPlaybackTests.swift; sourceTree = "<group>"; };
+		39FD5A8E59E324EECBBD6EDE /* FTPlayerControlPlaybackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerControlPlaybackTests.swift; sourceTree = "<group>"; };
+		5BDAEB98E6F6B7E4A3D1EF60 /* FTPlayerDecodeBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerDecodeBackendTests.swift; sourceTree = "<group>"; };
+		EC17CDC7314BE4172183A3F9 /* FTPlayerSeekRateControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTPlayerSeekRateControlTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,6 +336,7 @@
 			isa = PBXGroup;
 			children = (
 				7595F9AEAF2929EC88A817F5 /* FTPlayerHTTPTests.swift */,
+				502A9CD7ACE2EBA64BF9AD93 /* FTPlayerHTTPPlaybackTests.swift */,
 			);
 			path = Buffering;
 			sourceTree = "<group>";
@@ -418,6 +443,8 @@
 			isa = PBXGroup;
 			children = (
 				7568D612FEC66967320DBBB3 /* FTPlayerHLSTests.swift */,
+				C029C56FDD7004E44150618E /* FTPlayerHLSPlaybackTests.swift */,
+				8303F39AA993B371E03D814E /* FTPlayerCapturedMediaRegressionTests.swift */,
 			);
 			path = HLS;
 			sourceTree = "<group>";
@@ -439,6 +466,10 @@
 			children = (
 				3F4EC51CA641485DA7680D55 /* FTPlayerControlTests.swift */,
 				D69D1A024ED3098C72FF8FF9 /* FTPlayerHighRateLoadTests.swift */,
+				EC17CDC7314BE4172183A3F9 /* FTPlayerSeekRateControlTests.swift */,
+				5BDAEB98E6F6B7E4A3D1EF60 /* FTPlayerDecodeBackendTests.swift */,
+				39FD5A8E59E324EECBBD6EDE /* FTPlayerControlPlaybackTests.swift */,
+				9DB0669B984C2E1E893F21E7 /* FTPlayerMuteTests.swift */,
 			);
 			path = Playback;
 			sourceTree = "<group>";
@@ -677,6 +708,11 @@
 			isa = PBXGroup;
 			children = (
 				4CCF4AB1AE651B0902AB3DF5 /* UnitTestCase.swift */,
+				68D310BED170C4ABBF19B3BD /* DecodeBackendTestCase.swift */,
+				8ED910440A0CA547237B1040 /* SyntheticFixtures.swift */,
+				4D6BF6944650D086097A50E3 /* FixtureHTTPServer.swift */,
+				7E03AE8EF34475C406376007 /* MediaTestCase.swift */,
+				FC8244A3BA9D5FDE6817BC16 /* SyntheticMedia.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -852,6 +888,18 @@
 				DCF4E82DD671925B479C5608 /* FTPlayerHighRateLoadTests.swift in Sources */,
 				5B30D50D335B5FBE3BF65D24 /* FTPlayerSmokeTests.swift in Sources */,
 				629BCC28AC347F4EC8CB0180 /* UnitTestCase.swift in Sources */,
+				0B7E74455BAFD417C1C57F07 /* FTPlayerSeekRateControlTests.swift in Sources */,
+				0A7BBD59FD4FD781FC96C8CC /* FTPlayerDecodeBackendTests.swift in Sources */,
+				B638BE9A9792C2123C1627BB /* FTPlayerControlPlaybackTests.swift in Sources */,
+				4C45114F7797410331AA5693 /* FTPlayerHTTPPlaybackTests.swift in Sources */,
+				571A9C4A1DFE71726A8296C9 /* DecodeBackendTestCase.swift in Sources */,
+				1A0F70AC7449ED19208D2681 /* FTPlayerHLSPlaybackTests.swift in Sources */,
+				4F77501CA65A0240218C487E /* SyntheticFixtures.swift in Sources */,
+				5346A9599699DC50D90ABFB0 /* FixtureHTTPServer.swift in Sources */,
+				8C1675DF20F7890200E89DA3 /* FTPlayerCapturedMediaRegressionTests.swift in Sources */,
+				0F49B7EACE285A50A02F0ECF /* FTPlayerMuteTests.swift in Sources */,
+				D58313A168372768E5FC9E75 /* MediaTestCase.swift in Sources */,
+				52E9158019FBDF4E6E43EC63 /* SyntheticMedia.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

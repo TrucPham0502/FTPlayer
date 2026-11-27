@@ -266,6 +266,27 @@ final class FTPlayerHTTPTests: UnitTestCase {
         }
     }
 
+    /// A user-initiated proxy read waits on CacheWorker's condition for these callbacks.
+    /// Prefetch starts transfers at utility QoS; the waker must not inherit it.
+    func testStreamingLoaderCallbacksRunAtUserInitiatedWhenStartedFromUtility() throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent("loader-qos-\(UUID().uuidString)")
+        try Data(count: 1024).write(to: file)
+        defer { try? FileManager.default.removeItem(at: file) }
+        let loader = StreamingLoader(url: file)
+        defer { loader.invalidate() }
+        let delivered = expectation(description: "data")
+        delivered.assertForOverFulfill = false
+        var callbackQoS = QOS_CLASS_UNSPECIFIED
+        loader.onData = { _, _ in
+            callbackQoS = qos_class_self()
+            delivered.fulfill()
+        }
+        DispatchQueue(label: "unit.loader.utility", qos: .utility).async { loader.start(from: 0) }
+        wait(for: [delivered], timeout: 5)
+        XCTAssertGreaterThanOrEqual(callbackQoS.rawValue, QOS_CLASS_USER_INITIATED.rawValue,
+                                    "Waker QoS \(callbackQoS.rawValue) is below the proxy's user-initiated wait")
+    }
+
 }
 
 /// No socket/session is created. Any attempted transfer is observable by the test.

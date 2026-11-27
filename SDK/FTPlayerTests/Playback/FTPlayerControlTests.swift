@@ -622,4 +622,48 @@ final class FTPlayerControlTests: UnitTestCase {
         decoder.closeFile()
     }
 
+    // seek() publishes its target before pausing the video codec. If the read
+    // thread takes the request inside that window, its unpause must not be
+    // overwritten: decoding would stay paused and the seek would never buffer.
+    func testSeekTakenBeforeCodecPauseStillDecodesTarget() throws {
+        let url = try SyntheticMedia.cached("seek-window-video.mp4") { try SyntheticMedia.write(.init(duration: 30, audio: nil), to: $0) }
+        let probe = SeekWindowProbe(target: 20)
+        let decoder = FTDecoder(contentURL: url, videoFormat: .unknown, videoOutput: probe, audioOutput: nil)
+        decoder.delegate = probe; decoder.open()
+        defer { decoder.delegate = nil; decoder.closeFile() }
+        try require(until { !probe.positions.isEmpty || probe.error != nil }, "Playback never presented video")
+        var completed: Bool?
+        decoder.seek(to: probe.target) { completed = $0 }
+        XCTAssertTrue(probe.injectedDelay, "Seek did not publish its target synchronously")
+        try require(until(5) { completed != nil }, "Read thread did not perform the seek")
+        XCTAssertEqual(completed, true)
+        XCTAssertTrue(until(5) { probe.positions.contains { $0 >= probe.target - 0.05 } || probe.error != nil },
+                      "No target video after the seek: \(decoder.diagnosticSnapshot)")
+        XCTAssertNil(probe.error)
+    }
+}
+
+private final class SeekWindowProbe: FTDecoderVideoOutput, FTDecoderDelegate {
+    let target: TimeInterval
+    private let lock = NSLock()
+    private var storedPositions: [TimeInterval] = [], storedError: Error?
+    private(set) var injectedDelay = false
+    var positions: [TimeInterval] { lock.withLock { storedPositions } }
+    var error: Error? { lock.withLock { storedError } }
+    init(target: TimeInterval) { self.target = target }
+    func send(video frame: FTVideoFrame, from decoder: any PlaybackEngine) { lock.withLock { storedPositions.append(frame.position) } }
+    func decoderWillOpenInputStream(_ decoder: any PlaybackEngine) {}
+    func decoderDidPrepareToDecodeFrames(_ decoder: any PlaybackEngine) {}
+    func decoderDidEndOfFile(_ decoder: any PlaybackEngine) {}
+    func decoderDidPlaybackFinished(_ decoder: any PlaybackEngine) {}
+    func decoder(_ decoder: any PlaybackEngine, didError error: Error) { lock.withLock { storedError = error } }
+    func decoder(_ decoder: any PlaybackEngine, didChangeValueOfBuffering buffering: Bool) {}
+    func decoder(_ decoder: any PlaybackEngine, didChangeValueOfBufferedDuration bufferedDuration: TimeInterval) {}
+    func decoder(_ decoder: any PlaybackEngine, didChangeValueOfProgress progress: TimeInterval) {
+        // Widen the window between enqueueing the seek and pausing the codec,
+        // letting the read thread take and perform the request first.
+        guard Thread.isMainThread, progress == target, !injectedDelay else { return }
+        injectedDelay = true
+        Thread.sleep(forTimeInterval: 0.3)
+    }
 }

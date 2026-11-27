@@ -42,7 +42,11 @@ class StreamingLoader: NSObject {
         let config = URLSessionConfiguration.ephemeral
         config.urlCache = nil
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        // Callbacks wake user-initiated proxy reads; don't inherit the caller's (e.g. utility prefetch) QoS.
+        let callbacks = OperationQueue()
+        callbacks.maxConcurrentOperationCount = 1
+        callbacks.qualityOfService = .userInitiated
+        session = URLSession(configuration: config, delegate: self, delegateQueue: callbacks)
     }
 
     func start(from offset: Int64, to end: Int64? = nil) {

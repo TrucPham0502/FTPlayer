@@ -47,6 +47,8 @@ public enum FTPlayerSDKConfiguration {
         static let postSeekDropThreshold: TimeInterval = 0.5
         static let postSeekDropRateDivisor = 4.0
         static let earlyFrameDurationFraction = 0.5
+        /// Caps the half-frame lead; unchanged for video of 10 fps and above.
+        static let maximumEarlyFrameLead: TimeInterval = 0.05
         static let videoDropToleranceFrames = 6.0
         static let fallbackVideoFPS = 24.0
         static let audioCatchUpLead: TimeInterval = 0.2

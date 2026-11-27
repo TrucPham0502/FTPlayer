@@ -163,3 +163,79 @@ final class FTPlayerFrameRateTests: UnitTestCase {
     }
 
 }
+
+/// Frame-rate statistics on a 24 fps synthetic H.264 sample.
+final class FTPlayerFrameRatePlaybackTests: MediaTestCase {
+    private final class StatisticsSpy: FTPlayerVideoStatisticsDelegate {
+        var frameRates: [(value: Double?, upcoming: Double?, wall: TimeInterval)] = []
+        var contentRates: [Double?] = []
+        var offMainCallbacks = 0
+        func player(_ player: FTPlayer, didChangeVideoFrameRate statistics: FTVideoFrameRateStatistics) {
+            if !Thread.isMainThread { offMainCallbacks += 1 }
+            frameRates.append((statistics.timelineFramesPerSecond, statistics.upcomingTimelineFramesPerSecond,
+                               ProcessInfo.processInfo.systemUptime))
+        }
+        func player(_ player: FTPlayer, didChangeVideoContentChangeRate statistics: FTVideoContentChangeStatistics) {
+            if !Thread.isMainThread { offMainCallbacks += 1 }
+            contentRates.append(statistics.estimatedChangesPerSecond)
+        }
+    }
+
+    func testVideoStatisticsDelegateReportsChangesOnMainWithoutChangingRate() throws {
+        FTPlayerDiagnostic.shared.isEnabled = false
+        let s = try start(SyntheticMedia.sample(), policy: .ffmpeg)
+        let spy = StatisticsSpy()
+        s.player.videoStatisticsDelegate = spy
+        try require(until(8) { spy.frameRates.contains { $0.value != nil } }, "No frame-rate callback")
+        pump(2)
+        XCTAssertEqual(try XCTUnwrap(spy.frameRates.last?.value), 24, accuracy: 0.5)
+        XCTAssertEqual(try XCTUnwrap(spy.frameRates.last?.upcoming), 24, accuracy: 0.5, "Packets ahead are reported")
+        for (previous, next) in zip(spy.frameRates, spy.frameRates.dropFirst()) {
+            XCTAssertGreaterThanOrEqual(next.wall - previous.wall, 0.49, "Callbacks exceed the notification interval")
+            XCTAssertTrue(next.value != previous.value || next.upcoming != previous.upcoming, "Unchanged values must not be repeated")
+        }
+        XCTAssertTrue(spy.contentRates.isEmpty, "Content callbacks require the opt-in measurement")
+        s.player.isVideoContentChangeMeasurementEnabled = true
+        try require(until(6) { spy.contentRates.contains { $0 != nil } }, "No content-change callback")
+        XCTAssertEqual(spy.offMainCallbacks, 0)
+        XCTAssertEqual(s.player.rate, 1, "The SDK reports measurements but never changes rate")
+        let delivered = spy.frameRates.count
+        s.player.videoStatisticsDelegate = nil
+        pump(1)
+        XCTAssertEqual(spy.frameRates.count, delivered)
+    }
+
+
+    func testPublicFPSMeasuresPlaybackWithLoggingDisabledAndResetsOnControls() throws {
+        FTPlayerDiagnostic.shared.isEnabled = false
+        let s = try start(SyntheticMedia.sample(), policy: .ffmpeg)
+        XCTAssertFalse(s.player.isVideoContentChangeMeasurementEnabled)
+        XCTAssertNil(s.player.videoContentChangeStatistics.estimatedChangesPerSecond)
+        s.player.isVideoContentChangeMeasurementEnabled = true
+        try require(until(8) { s.sink.frames >= 30 }, "No output frames for FPS measurement")
+        try require(until(5) { s.player.videoContentChangeStatistics.estimatedChangesPerSecond != nil }, "No content measurement")
+        XCTAssertGreaterThan(try XCTUnwrap(s.player.videoContentChangeStatistics.estimatedChangesPerSecond), 0)
+        let measured = s.player.videoFrameRateStatistics
+        XCTAssertEqual(try XCTUnwrap(measured.timelineFramesPerSecond), 24, accuracy: 0.1)
+        XCTAssertEqual(try XCTUnwrap(measured.upcomingTimelineFramesPerSecond), 24, accuracy: 0.5)
+        XCTAssertGreaterThan(measured.outputFramesPerSecond, 15)
+        XCTAssertLessThan(measured.outputFramesPerSecond, 32)
+        s.player.pause()
+        XCTAssertNil(s.player.videoContentChangeStatistics.estimatedChangesPerSecond)
+        XCTAssertNil(s.player.videoFrameRateStatistics.timelineFramesPerSecond)
+        XCTAssertEqual(s.player.videoFrameRateStatistics.outputFramesPerSecond, 0)
+        s.player.play()
+        try require(until(5) { s.player.videoFrameRateStatistics.sampleFrameCount >= 10 }, "FPS did not resume")
+        s.player.rate = 2
+        XCTAssertNil(s.player.videoContentChangeStatistics.estimatedChangesPerSecond)
+        XCTAssertEqual(s.player.videoFrameRateStatistics.sampleFrameCount, 0)
+        s.player.seek(to: 10)
+        XCTAssertNil(s.player.videoContentChangeStatistics.estimatedChangesPerSecond)
+        XCTAssertEqual(s.player.videoFrameRateStatistics.sampleFrameCount, 0)
+        s.player.stop()
+        XCTAssertNil(s.player.videoContentChangeStatistics.estimatedChangesPerSecond)
+        XCTAssertEqual(s.player.videoFrameRateStatistics.outputFramesPerSecond, 0)
+        XCTAssertNil(s.player.videoFrameRateStatistics.timelineFramesPerSecond)
+        XCTAssertNil(s.player.videoFrameRateStatistics.upcomingTimelineFramesPerSecond)
+    }
+}

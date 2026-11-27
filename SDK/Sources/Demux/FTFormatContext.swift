@@ -524,6 +524,14 @@ class FTFormatContext {
         if let io = formatContext?.pointee.pb {
             io.pointee.eof_reached = 0
             io.pointee.error = 0
+            // An interrupted AVIO seek-back near the file start leaves an empty
+            // buffer at byte 0. The MP4 demuxer treats that as a restarted stream,
+            // reparses the root atoms and fails every later seek. Refill first.
+            if io.pointee.pos == 0, io.pointee.buf_ptr == io.pointee.buf_end {
+                _ = avio_r8(io)
+                avio_seek(io, 0, SEEK_SET)
+                if io.pointee.pos == 0 { return false } // Still interrupted; the next seek retries.
+            }
         }
         // A seek may arrive immediately after ready, before the packet loop has
         // observed the first keyframe. Seed from the already opened input only
